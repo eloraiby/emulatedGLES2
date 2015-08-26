@@ -8,12 +8,18 @@ QT       -= core gui
 
 TARGET = emulatedGLES2
 TEMPLATE = lib
-CONFIG += staticlib
+#CONFIG += staticlib
 
-SOURCES += emulatedgles2.cpp
 
-HEADERS += emulatedgles2.h
 unix {
     target.path = /usr/lib
     INSTALLS += target
 }
+
+HEADERS += \
+    gl_core_3_0.h \
+    emulated-gles2.h
+
+SOURCES += \
+    gl_core_3_0.c \
+    emulated-gles2.c
