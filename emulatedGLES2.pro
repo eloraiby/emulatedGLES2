@@ -17,9 +17,9 @@ unix {
 }
 
 HEADERS += \
-    gl_core_3_0.h \
-    emulated-gles2.h
+    emulated-gles2.h \
+    gl_core.h
 
 SOURCES += \
-    gl_core_3_0.c \
-    emulated-gles2.c
+    emulated-gles2.c \
+    gl_core.c

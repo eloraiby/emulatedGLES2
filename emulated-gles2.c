@@ -1,6 +1,6 @@
 #include "emulated-gles2.h"
 
-#include "gl_core_3_0.h"
+#include "gl_core.h"
 
 DLL_PUBLIC void      emu_glActiveTexture(GL_ENUM texture) {
 	glActiveTexture(texture);
@@ -164,13 +164,13 @@ DLL_PUBLIC void      emu_glGenRenderbuffers(uint32 n, uint32 *renderbuffers) {
 DLL_PUBLIC void      emu_glGenTextures(uint32 n, uint32 *textures) {
 	glGenTextures(n, textures);
 }
-DLL_PUBLIC void      emu_glGetActiveAttrib(uint32 program, uint32 index, uint32 bufSize, uint32 *length, sint32 *size, GL_ENUM *type, char *name) {
+DLL_PUBLIC void      emu_glGetActiveAttrib(uint32 program, uint32 index, uint32 bufSize, sint32 *length, sint32 *size, GL_ENUM *type, char *name) {
 	return glGetActiveAttrib(program, index, bufSize, length, size, type, name);
 }
-DLL_PUBLIC void      emu_glGetActiveUniform(uint32 program, uint32 index, uint32 bufSize, uint32 *length, sint32 *size, GL_ENUM *type, char *name) {
+DLL_PUBLIC void      emu_glGetActiveUniform(uint32 program, uint32 index, uint32 bufSize, sint32 *length, sint32 *size, GL_ENUM *type, char *name) {
 	return glGetActiveUniform(program, index, bufSize, length, size, type, name);
 }
-DLL_PUBLIC void      emu_glGetAttachedShaders(uint32 program, uint32 maxCount, uint32 *count, uint32 *shaders) {
+DLL_PUBLIC void      emu_glGetAttachedShaders(uint32 program, uint32 maxCount, sint32 *count, uint32 *shaders) {
 	return glGetAttachedShaders(program, maxCount, count, shaders);
 }
 DLL_PUBLIC sint32    emu_glGetAttribLocation(uint32 program, const char *name) {
