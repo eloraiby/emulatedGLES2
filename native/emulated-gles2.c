@@ -1,3 +1,23 @@
+/*
+** Emulated GLES2 for .Net
+** Copyright (C) 2015  Wael El Oraiby
+**
+** This program is free software: you can redistribute it and/or modify
+** it under the terms of the GNU Affero General Public License as
+** published by the Free Software Foundation, either version 3 of the
+** License, or (at your option) any later version.
+**
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU Affero General Public License for more details.
+**
+** You should have received a copy of the GNU Affero General Public License
+** along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#define BUILDING_DLL 1
+
 #include "emulated-gles2.h"
 
 #include "gl_core.h"
@@ -165,13 +185,13 @@ DLL_PUBLIC void      emu_glGenTextures(uint32 n, uint32 *textures) {
 	glGenTextures(n, textures);
 }
 DLL_PUBLIC void      emu_glGetActiveAttrib(uint32 program, uint32 index, uint32 bufSize, sint32 *length, sint32 *size, GL_ENUM *type, char *name) {
-	return glGetActiveAttrib(program, index, bufSize, length, size, type, name);
+	glGetActiveAttrib(program, index, bufSize, length, size, type, name);
 }
 DLL_PUBLIC void      emu_glGetActiveUniform(uint32 program, uint32 index, uint32 bufSize, sint32 *length, sint32 *size, GL_ENUM *type, char *name) {
-	return glGetActiveUniform(program, index, bufSize, length, size, type, name);
+	glGetActiveUniform(program, index, bufSize, length, size, type, name);
 }
 DLL_PUBLIC void      emu_glGetAttachedShaders(uint32 program, uint32 maxCount, sint32 *count, uint32 *shaders) {
-	return glGetAttachedShaders(program, maxCount, count, shaders);
+	glGetAttachedShaders(program, maxCount, count, shaders);
 }
 DLL_PUBLIC sint32    emu_glGetAttribLocation(uint32 program, const char *name) {
 	return glGetAttribLocation(program, name);
@@ -198,7 +218,7 @@ DLL_PUBLIC void      emu_glGetProgramiv(uint32 program, GL_ENUM pname, sint32 *p
 	glGetProgramiv(program, pname, params);
 }
 DLL_PUBLIC void      emu_glGetProgramInfoLog(uint32 program, uint32 bufSize, uint32 *length, char *infoLog) {
-	return glGetProgramInfoLog(program, bufSize, length, infoLog);
+	glGetProgramInfoLog(program, bufSize, length, infoLog);
 }
 DLL_PUBLIC void      emu_glGetRenderbufferParameteriv(GL_ENUM target, GL_ENUM pname, sint32 *params) {
 	glGetRenderbufferParameteriv(target, pname, params);
@@ -207,13 +227,15 @@ DLL_PUBLIC void      emu_glGetShaderiv(uint32 shader, GL_ENUM pname, sint32 *par
 	glGetShaderiv(shader, pname, params);
 }
 DLL_PUBLIC void      emu_glGetShaderInfoLog(uint32 shader, uint32 bufSize, uint32 *length, char *infoLog) {
-	return glGetShaderInfoLog(shader, bufSize, length, infoLog);
+	glGetShaderInfoLog(shader, bufSize, length, infoLog);
 }
 DLL_PUBLIC void      emu_glGetShaderPrecisionFormat(GL_ENUM shadertype, GL_ENUM precisiontype, sint32 *range, sint32 *precision) {
-	return 0; /*glGetShaderPrecisionFormat	(shadertype, precisiontype, range, precision);*/
+	if (range ) *range = 0;
+	if (precision) *precision = 0;
+	return; /*glGetShaderPrecisionFormat	(shadertype, precisiontype, range, precision);*/
 }
 DLL_PUBLIC void      emu_glGetShaderSource(uint32 shader, uint32 bufSize, uint32 *length, char *source) {
-	return glGetShaderSource(shader, bufSize, length, source);
+	glGetShaderSource(shader, bufSize, length, source);
 }
 DLL_PUBLIC const GLubyte *emu_glGetString(GL_ENUM name) {
 	return glGetString(name);
