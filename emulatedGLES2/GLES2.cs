@@ -1046,22 +1046,80 @@ namespace Render
             }
         }
 
-        public static void      glUniformMatrix2fv     (sint32 location, uint32 count, GLboolean transpose, const float *value);                                                                           
-//        public static void      glUniformMatrix3fv     (sint32 location, uint32 count, GLboolean transpose, const float *value);                                                                           
-//        public static void      glUniformMatrix4fv     (sint32 location, uint32 count, GLboolean transpose, const float *value);                                                                           
-//        public static void      glUseProgram           (uint32 program);                                                                                                                                   
-//        public static void      glValidateProgram      (uint32 program);                                                                                                                                   
-//        public static void      glVertexAttrib1f       (uint32 index, float x);                                                                                                                            
-//        public static void      glVertexAttrib1fv      (uint32 index, const float *v);                                                                                                                     
-//        public static void      glVertexAttrib2f       (uint32 index, float x, float y);                                                                                                                   
-//        public static void      glVertexAttrib2fv      (uint32 index, const float *v);                                                                                                                     
-//        public static void      glVertexAttrib3f       (uint32 index, float x, float y, float z);                                                                                                          
-//        public static void      glVertexAttrib3fv      (uint32 index, const float *v);                                                                                                                     
-//        public static void      glVertexAttrib4f       (uint32 index, float x, float y, float z, float w);                                                                                                 
-//        public static void      glVertexAttrib4fv      (uint32 index, const float *v);                                                                                                                     
-//        public static void      glVertexAttribPointer  (uint32 index, sint32 size, GL_ENUM type, GLboolean normalized, uint32 stride, const void *pointer);                                                
-//        public static void      glViewport             (sint32 x, sint32 y, uint32 width, uint32 height);                                                                                                  
-//
+        public static void      glUniformMatrix2f     (sint32 location, uint32 count, bool transpose, float[] values) {
+            fixed(float* vals = values) {
+                emu_glUniformMatrix2fv (location, count, (GLboolean)(transpose ? GLenum.GL_TRUE : GLenum.GL_FALSE), vals);
+            }
+        }
+
+        public static void      glUniformMatrix3f     (sint32 location, uint32 count, bool transpose, float[] values) {
+            fixed(float* vals = values) {
+                emu_glUniformMatrix3fv (location, count, (GLboolean)(transpose ? GLenum.GL_TRUE : GLenum.GL_FALSE), vals);
+            }
+        }
+
+        public static void      glUniformMatrix4f     (sint32 location, uint32 count, bool transpose, float[] values) {
+            fixed(float* vals = values) {
+                emu_glUniformMatrix4fv (location, count, (GLboolean)(transpose ? GLenum.GL_TRUE : GLenum.GL_FALSE), vals);
+            }
+        }
+
+        public static void      glUseProgram           (uint32 program) {
+            emu_glUseProgram (program);
+        }
+
+        public static void      glValidateProgram      (uint32 program) {
+            emu_glValidateProgram (program);
+        }
+
+        public static void      glVertexAttrib1f       (uint32 index, float x) {
+            emu_glVertexAttrib1f (index, x);
+        }
+
+        public static void      glVertexAttrib1f      (uint32 index, float[] v) {
+            fixed(float* vs = v) {
+                emu_glVertexAttrib1fv (index, vs);
+            }
+        }
+
+        public static void      glVertexAttrib2f       (uint32 index, float x, float y) {
+            emu_glVertexAttrib2f (index, x, y);
+        }
+
+        public static void      glVertexAttrib2f      (uint32 index, float[] v) {
+            fixed(float* vs = v) {
+                emu_glVertexAttrib2fv (index, vs);
+            }
+        }
+
+        public static void      glVertexAttrib3f       (uint32 index, float x, float y, float z) {
+            emu_glVertexAttrib3f (index, x, y, z);
+        }
+
+        public static void      glVertexAttrib3f      (uint32 index, float[] v) {
+            fixed(float* vs = v) {
+                emu_glVertexAttrib3fv (index, vs);
+            }
+        }
+
+        public static void      glVertexAttrib4f       (uint32 index, float x, float y, float z, float w) {
+            emu_glVertexAttrib4f (index, x, y, z, w);
+        }
+
+        public static void      glVertexAttrib4f      (uint32 index, float[] v) {
+            fixed(float* vs = v) {
+                emu_glVertexAttrib4fv (index, vs);
+            }
+        }
+
+        public static void      glVertexAttribPointer  (uint32 index, sint32 size, GLenum type, bool normalized, uint32 stride, IntPtr pointer) {
+            emu_glVertexAttribPointer (index, size, type, (GLboolean)(normalized ? GLenum.GL_TRUE : GLenum.GL_FALSE), stride, (void*)pointer);
+        }
+
+        public static void      glViewport             (sint32 x, sint32 y, uint32 width, uint32 height) {
+            emu_glViewport (x, y, width, height);
+        }
+
         const string DllName = @"native.dll";
         const int MaxStrLength = 256;
         const int MaxAttachedShaders = 64;
