@@ -16,10 +16,7 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 
 namespace Render
@@ -334,8 +331,41 @@ namespace Render
         GL_INVALID_FRAMEBUFFER_OPERATION = 0x0506,
     }
 
+    public struct GLAttribute {
+        public uint32 size;
+        public GLenum glType;
+        public string name;
 
-    public unsafe class GLES2
+        public GLAttribute(uint32 size, GLenum glType, string name) {
+            this.size = size;
+            this.glType = glType;
+            this.name = name;
+        }
+    }
+
+    public struct GLUniform {
+        public uint32 size;
+        public GLenum glType;
+        public string name;
+
+        public GLUniform(uint32 size, GLenum glType, string name) {
+            this.size = size;
+            this.glType = glType;
+            this.name = name;
+        }
+    }
+
+    public struct GLPrecision {
+        public sint32 range;
+        public sint32 precision;
+
+        public GLPrecision(sint32 range, sint32 precision) {
+            this.range = range;
+            this.precision = precision;
+        }
+    }
+
+    public unsafe static class GLES2
     {
         public static void      glActiveTexture        (GLenum texture) {
             emu_glActiveTexture (texture);
@@ -347,579 +377,893 @@ namespace Render
 
         public static void      glBindAttribLocation   (uint32 program, uint32 index, string name) {
             fixed(char* arr = name.ToCharArray()) {
-                glBindAttribLocation (program, index, arr);
+                emu_glBindAttribLocation (program, index, arr);
             }
         }
 
-        public static void      glBindBuffer           (GL_ENUM target, uint32 buffer);                                                                                                                    
-        public static void      glBindFramebuffer      (GL_ENUM target, uint32 framebuffer);                                                                                                               
-        public static void      glBindRenderbuffer     (GL_ENUM target, uint32 renderbuffer);                                                                                                              
-        public static void      glBindTexture          (GL_ENUM target, uint32 texture);                                                                                                                   
-        public static void      glBlendColor           (float red, float green, float blue, float alpha);                                                                                                  
-        public static void      glBlendEquation        (GL_ENUM mode);                                                                                                                                     
-        public static void      glBlendEquationSeparate    (GL_ENUM modeRGB, GL_ENUM modeAlpha);                                                                                                               
-        public static void      glBlendFunc            (GL_ENUM sfactor, GL_ENUM dfactor);                                                                                                                 
-        public static void      glBlendFuncSeparate        (GL_ENUM sfactorRGB, GL_ENUM dfactorRGB, GL_ENUM sfactorAlpha, GL_ENUM dfactorAlpha);                                                               
-        public static void      glBufferData           (GL_ENUM target, uint32 size, const void *data, GL_ENUM usage);                                                                                     
-        public static void      glBufferSubData        (GL_ENUM target, uint32 offset, uint32 size, const void *data);                                                                                     
-        public static GL_ENUM   glCheckFramebufferStatus   (GL_ENUM target);                                                                                                                                   
-        public static void      glClear            (uint32 mask);                                                                                                                                      
-        public static void      glClearColor           (float red, float green, float blue, float alpha);                                                                                                  
-        public static void      glClearDepthf          (float d);                                                                                                                                          
-        public static void      glClearStencil         (sint32 s);                                                                                                                                         
-        public static void      glColorMask            (GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha);                                                                                  
-        public static void      glCompileShader        (uint32 shader);                                                                                                                                    
-        public static void      glCompressedTexImage2D     (GL_ENUM target, sint32 level, GL_ENUM internalformat, uint32 width, uint32 height, sint32 border, uint32 imageSize, const void *data);             
-        public static void      glCompressedTexSubImage2D  (GL_ENUM target, sint32 level, sint32 xoffset, sint32 yoffset, uint32 width, uint32 height, GL_ENUM format, uint32 imageSize, const void *data);    
-        public static void      glCopyTexImage2D       (GL_ENUM target, sint32 level, GL_ENUM internalformat, sint32 x, sint32 y, uint32 width, uint32 height, sint32 border);                             
-        public static void      glCopyTexSubImage2D        (GL_ENUM target, sint32 level, sint32 xoffset, sint32 yoffset, sint32 x, sint32 y, uint32 width, uint32 height);                                    
-        public static uint32    glCreateProgram        ();                                                                                                                                                 
-        public static uint32    glCreateShader         (GL_ENUM type);                                                                                                                                     
-        public static void      glCullFace         (GL_ENUM mode);                                                                                                                                     
-        public static void      glDeleteBuffers        (uint32 n, const uint32 *buffers);                                                                                                                  
-        public static void      glDeleteFramebuffers       (uint32 n, const uint32 *framebuffers);                                                                                                             
-        public static void      glDeleteProgram        (uint32 program);                                                                                                                                   
-        public static void      glDeleteRenderbuffers      (uint32 n, const uint32 *renderbuffers);                                                                                                            
-        public static void      glDeleteShader         (uint32 shader);                                                                                                                                    
-        public static void      glDeleteTextures       (uint32 n, const uint32 *textures);                                                                                                                 
-        public static void      glDepthFunc            (GL_ENUM func);                                                                                                                                     
-        public static void      glDepthMask            (GLboolean flag);                                                                                                                                   
-        public static void      glDepthRangef          (float n, float f);                                                                                                                                 
-        public static void      glDetachShader         (uint32 program, uint32 shader);                                                                                                                    
-        public static void      glDisable          (GL_ENUM cap);                                                                                                                                      
-        public static void      glDisableVertexAttribArray (uint32 index);                                                                                                                                     
-        public static void      glDrawArrays           (GL_ENUM mode, sint32 first, uint32 count);                                                                                                         
-        public static void      glDrawElements         (GL_ENUM mode, uint32 count, GL_ENUM type, const void *indices);                                                                                    
-        public static void      glEnable           (GL_ENUM cap);                                                                                                                                      
-        public static void      glEnableVertexAttribArray  (uint32 index);                                                                                                                                     
-        public static void      glFinish           ();                                                                                                                                                 
-        public static void      glFlush            ();                                                                                                                                                 
-        public static void      glFramebufferRenderbuffer  (GL_ENUM target, GL_ENUM attachment, GL_ENUM renderbuffertarget, uint32 renderbuffer);                                                              
-        public static void      glFramebufferTexture2D     (GL_ENUM target, GL_ENUM attachment, GL_ENUM textarget, uint32 texture, sint32 level);                                                              
-        public static void      glFrontFace            (GL_ENUM mode);                                                                                                                                     
-        public static void      glGenBuffers           (uint32 n, uint32 *buffers);                                                                                                                        
-        public static void      glGenerateMipmap       (GL_ENUM target);                                                                                                                                   
-        public static void      glGenFramebuffers      (uint32 n, uint32 *framebuffers);                                                                                                                   
-        public static void      glGenRenderbuffers     (uint32 n, uint32 *renderbuffers);                                                                                                                  
-        public static void      glGenTextures          (uint32 n, uint32 *textures);                                                                                                                       
-        public static void      glGetActiveAttrib      (uint32 program, uint32 index, uint32 bufSize, sint32 *length, sint32 *size, GL_ENUM *type, char *name);                                            
-        public static void      glGetActiveUniform     (uint32 program, uint32 index, uint32 bufSize, sint32 *length, sint32 *size, GL_ENUM *type, char *name);                                            
-        public static void      glGetAttachedShaders       (uint32 program, uint32 maxCount, sint32 *count, uint32 *shaders);                                                                                  
-        public static sint32    glGetAttribLocation        (uint32 program, const char *name);                                                                                                                 
-        public static void      glGetBooleanv          (GL_ENUM pname, GLboolean *data);                                                                                                                   
-        public static void      glGetBufferParameteriv     (GL_ENUM target, GL_ENUM pname, sint32 *params);                                                                                                    
-        public static GL_ENUM   glGetError         ();                                                                                                                                                 
-        public static void      glGetFloatv            (GL_ENUM pname, float *data);                                                                                                                       
-        public static void      glGetFramebufferAttachmentParameteriv (GL_ENUM target, GL_ENUM attachment, GL_ENUM pname, sint32 *params);                                                                         
-        public static void      glGetIntegerv          (GL_ENUM pname, sint32 *data);                                                                                                                      
-        public static void      glGetProgramiv         (uint32 program, GL_ENUM pname, sint32 *params);                                                                                                    
-        public static void      glGetProgramInfoLog        (uint32 program, uint32 bufSize, uint32 *length, char *infoLog);                                                                                    
-        public static void      glGetRenderbufferParameteriv   (GL_ENUM target, GL_ENUM pname, sint32 *params);                                                                                                    
-        public static void      glGetShaderiv          (uint32 shader, GL_ENUM pname, sint32 *params);                                                                                                     
-        public static void      glGetShaderInfoLog     (uint32 shader, uint32 bufSize, uint32 *length, char *infoLog);                                                                                     
-        public static void      glGetShaderPrecisionFormat (GL_ENUM shadertype, GL_ENUM precisiontype, sint32 *range, sint32 *precision);                                                                      
-        public static void      glGetShaderSource      (uint32 shader, uint32 bufSize, uint32 *length, char *source);                                                                                      
-        public static GLubyte*  glGetString       (GL_ENUM name);                                                                                                                                     
-        public static void      emu_glGetTexParameterfv        (GL_ENUM target, GL_ENUM pname, float *params);                                                                                                     
-        public static void      emu_glGetTexParameteriv        (GL_ENUM target, GL_ENUM pname, sint32 *params);                                                                                                    
-        public static void      emu_glGetUniformfv         (uint32 program, sint32 location, float *params);                                                                                                   
-        public static void      emu_glGetUniformiv         (uint32 program, sint32 location, sint32 *params);                                                                                                  
-        public static sint32    emu_glGetUniformLocation       (uint32 program, const char *name);                                                                                                                 
-        public static void      emu_glGetVertexAttribfv        (uint32 index, GL_ENUM pname, float *params);                                                                                                       
-        public static void      emu_glGetVertexAttribiv        (uint32 index, GL_ENUM pname, sint32 *params);                                                                                                      
-        public static void      emu_glGetVertexAttribPointerv  (uint32 index, GL_ENUM pname, void **pointer);                                                                                                      
-        public static void      emu_glHint             (GL_ENUM target, GL_ENUM mode);                                                                                                                     
-        public static GLboolean emu_glIsBuffer         (uint32 buffer);                                                                                                                                    
-        public static GLboolean emu_glIsEnabled            (GL_ENUM cap);                                                                                                                                      
-        public static GLboolean emu_glIsFramebuffer        (uint32 framebuffer);                                                                                                                               
-        public static GLboolean emu_glIsProgram            (uint32 program);                                                                                                                                   
-        public static GLboolean emu_glIsRenderbuffer       (uint32 renderbuffer);                                                                                                                              
-        public static GLboolean emu_glIsShader         (uint32 shader);                                                                                                                                    
-        public static GLboolean emu_glIsTexture            (uint32 texture);                                                                                                                                   
-        public static void      emu_glLineWidth            (float width);                                                                                                                                      
-        public static void      emu_glLinkProgram          (uint32 program);                                                                                                                                   
-        public static void      emu_glPixelStorei          (GL_ENUM pname, sint32 param);                                                                                                                      
-        public static void      emu_glPolygonOffset        (float factor, float units);                                                                                                                        
-        public static void      emu_glReadPixels           (sint32 x, sint32 y, uint32 width, uint32 height, GL_ENUM format, GL_ENUM type, void *pixels);                                                      
-        public static void      emu_glReleaseShaderCompiler    ();                                                                                                                                                 
-        public static void      emu_glRenderbufferStorage      (GL_ENUM target, GL_ENUM internalformat, uint32 width, uint32 height);                                                                              
-        public static void      emu_glSampleCoverage       (float value, GLboolean invert);                                                                                                                    
-        public static void      emu_glScissor          (sint32 x, sint32 y, uint32 width, uint32 height);                                                                                                  
-        public static void      emu_glShaderBinary         (uint32 count, const uint32 *shaders, GL_ENUM binaryformat, const void *binary, uint32 length);                                                     
-        public static void      emu_glShaderSource         (uint32 shader, uint32 count, const char *const*string, const sint32 *length);                                                                      
-        public static void      emu_glStencilFunc          (GL_ENUM func, sint32 ref, uint32 mask);                                                                                                            
-        public static void      emu_glStencilFuncSeparate      (GL_ENUM face, GL_ENUM func, sint32 ref, uint32 mask);                                                                                              
-        public static void      emu_glStencilMask          (uint32 mask);                                                                                                                                      
-        public static void      emu_glStencilMaskSeparate      (GL_ENUM face, uint32 mask);                                                                                                                        
-        public static void      emu_glStencilOp            (GL_ENUM fail, GL_ENUM zfail, GL_ENUM zpass);                                                                                                       
-        public static void      emu_glStencilOpSeparate        (GL_ENUM face, GL_ENUM sfail, GL_ENUM dpfail, GL_ENUM dppass);                                                                                      
-        public static void      emu_glTexImage2D           (GL_ENUM target, sint32 level, sint32 internalformat, uint32 width, uint32 height, sint32 border, GL_ENUM format, GL_ENUM type, const void *pixels);
-        public static void      emu_glTexParameterf        (GL_ENUM target, GL_ENUM pname, float param);                                                                                                       
-        public static void      emu_glTexParameterfv       (GL_ENUM target, GL_ENUM pname, const float *params);                                                                                               
-        public static void      emu_glTexParameteri        (GL_ENUM target, GL_ENUM pname, sint32 param);                                                                                                      
-        public static void      emu_glTexParameteriv       (GL_ENUM target, GL_ENUM pname, const sint32 *params);                                                                                              
-        public static void      emu_glTexSubImage2D        (GL_ENUM target, sint32 level, sint32 xoffset, sint32 yoffset, uint32 width, uint32 height, GL_ENUM format, GL_ENUM type, const void *pixels);      
-        public static void      emu_glUniform1f            (sint32 location, float v0);                                                                                                                        
-        public static void      emu_glUniform1fv           (sint32 location, uint32 count, const float *value);                                                                                                
-        public static void      emu_glUniform1i            (sint32 location, sint32 v0);                                                                                                                       
-        public static void      emu_glUniform1iv           (sint32 location, uint32 count, const sint32 *value);                                                                                               
-        public static void      emu_glUniform2f            (sint32 location, float v0, float v1);                                                                                                              
-        public static void      emu_glUniform2fv           (sint32 location, uint32 count, const float *value);                                                                                                
-        public static void      emu_glUniform2i            (sint32 location, sint32 v0, sint32 v1);                                                                                                            
-        public static void      emu_glUniform2iv           (sint32 location, uint32 count, const sint32 *value);                                                                                               
-        public static void      emu_glUniform3f            (sint32 location, float v0, float v1, float v2);                                                                                                    
-        public static void      emu_glUniform3fv           (sint32 location, uint32 count, const float *value);                                                                                                
-        public static void      emu_glUniform3i            (sint32 location, sint32 v0, sint32 v1, sint32 v2);                                                                                                 
-        public static void      emu_glUniform3iv           (sint32 location, uint32 count, const sint32 *value);                                                                                               
-        public static void      emu_glUniform4f            (sint32 location, float v0, float v1, float v2, float v3);                                                                                          
-        public static void      emu_glUniform4fv           (sint32 location, uint32 count, const float *value);                                                                                                
-        public static void      emu_glUniform4i            (sint32 location, sint32 v0, sint32 v1, sint32 v2, sint32 v3);                                                                                      
-        public static void      emu_glUniform4iv           (sint32 location, uint32 count, const sint32 *value);                                                                                               
-        public static void      emu_glUniformMatrix2fv     (sint32 location, uint32 count, GLboolean transpose, const float *value);                                                                           
-        public static void      emu_glUniformMatrix3fv     (sint32 location, uint32 count, GLboolean transpose, const float *value);                                                                           
-        public static void      emu_glUniformMatrix4fv     (sint32 location, uint32 count, GLboolean transpose, const float *value);                                                                           
-        public static void      emu_glUseProgram           (uint32 program);                                                                                                                                   
-        public static void      emu_glValidateProgram      (uint32 program);                                                                                                                                   
-        public static void      emu_glVertexAttrib1f       (uint32 index, float x);                                                                                                                            
-        public static void      emu_glVertexAttrib1fv      (uint32 index, const float *v);                                                                                                                     
-        public static void      emu_glVertexAttrib2f       (uint32 index, float x, float y);                                                                                                                   
-        public static void      emu_glVertexAttrib2fv      (uint32 index, const float *v);                                                                                                                     
-        public static void      emu_glVertexAttrib3f       (uint32 index, float x, float y, float z);                                                                                                          
-        public static void      emu_glVertexAttrib3fv      (uint32 index, const float *v);                                                                                                                     
-        public static void      emu_glVertexAttrib4f       (uint32 index, float x, float y, float z, float w);                                                                                                 
-        public static void      emu_glVertexAttrib4fv      (uint32 index, const float *v);                                                                                                                     
-        public static void      emu_glVertexAttribPointer  (uint32 index, sint32 size, GL_ENUM type, GLboolean normalized, uint32 stride, const void *pointer);                                                
-        public static void      emu_glViewport             (sint32 x, sint32 y, uint32 width, uint32 height);                                                                                                  
+        public static void      glBindBuffer           (GLenum target, uint32 buffer) {
+            emu_glBindBuffer (target, buffer);
+        }
 
-        private const string DllName = @"native.dll";
+        public static void      glBindFramebuffer      (GLenum target, uint32 framebuffer) {
+            emu_glBindFramebuffer (target, framebuffer);
+        }
+
+        public static void      glBindRenderbuffer     (GLenum target, uint32 renderbuffer) {
+            emu_glBindRenderbuffer (target, renderbuffer);
+        }
+
+        public static void      glBindTexture          (GLenum target, uint32 texture) {
+            emu_glBindTexture (target, texture);
+        }
+
+        public static void      glBlendColor           (float red, float green, float blue, float alpha) {
+            emu_glBlendColor (red, green, blue, alpha);
+        }
+
+        public static void      glBlendEquation        (GLenum mode) {
+            emu_glBlendEquation (mode);
+        }
+
+        public static void      glBlendEquationSeparate(GLenum modeRGB, GLenum modeAlpha) {
+            emu_glBlendEquationSeparate (modeRGB, modeAlpha);
+        }
+
+        public static void      glBlendFunc            (GLenum sfactor, GLenum dfactor) {
+            emu_glBlendFunc (sfactor, dfactor);
+        }
+
+        public static void      glBlendFuncSeparate    (GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha) {
+            emu_glBlendFuncSeparate (sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
+        }
+
+        public static void      glBufferData        (GLenum target, uint32 size, IntPtr data, GLenum usage) {
+            emu_glBufferData (target, size, (void*)data, usage);
+        }
+
+        public static void      glBufferSubData        (GLenum target, uint32 offset, uint32 size, IntPtr data) {
+            emu_glBufferSubData (target, offset, size, (void*)data);
+        }
+
+        public static GLenum    glCheckFramebufferStatus   (GLenum target) {
+            return emu_glCheckFramebufferStatus (target);
+        }
+
+        public static void      glClear                (uint32 mask) {
+            emu_glClear (mask);
+        }
+
+        public static void      glClearColor           (float red, float green, float blue, float alpha) {
+            emu_glClearColor (red, green, blue, alpha);
+        }
+
+        public static void      glClearDepthf          (float d) {
+            emu_glClearDepthf (d);
+        }
+
+        public static void      glClearStencil         (sint32 s) {
+            emu_glClearStencil (s);
+        }
+
+        public static void      glColorMask            (bool red, bool green, bool blue, bool alpha) {
+            var r = (GLboolean)(red ? GLenum.GL_TRUE : GLenum.GL_FALSE);
+            var g = (GLboolean)(green ? GLenum.GL_TRUE : GLenum.GL_FALSE);
+            var b = (GLboolean)(blue ? GLenum.GL_TRUE : GLenum.GL_FALSE);
+            var a = (GLboolean)(alpha ? GLenum.GL_TRUE : GLenum.GL_FALSE);
+            emu_glColorMask (r, g, b, a);
+        }
+
+        public static void      glCompileShader        (uint32 shader) {
+            emu_glCompileShader (shader);
+        }
+
+        public static void      glCompressedTexImage2D (GLenum target, sint32 level, GLenum internalformat, uint32 width, uint32 height, sint32 border, uint32 imageSize, IntPtr data) {
+            emu_glCompressedTexImage2D (target, level, internalformat, width, height, border, imageSize, (void*)data);
+        }
+
+        public static void      glCompressedTexSubImage2D  (GLenum target, sint32 level, sint32 xoffset, sint32 yoffset, uint32 width, uint32 height, GLenum format, uint32 imageSize, IntPtr data) {
+            emu_glCompressedTexSubImage2D (target, level, xoffset, yoffset, width, height, format, imageSize, (void*)data);
+        }
+
+        public static void      glCopyTexImage2D       (GLenum target, sint32 level, GLenum internalformat, sint32 x, sint32 y, uint32 width, uint32 height, sint32 border) {
+            emu_glCopyTexImage2D (target, level, internalformat, x, y, width, height, border);
+        }
+
+        public static void      glCopyTexSubImage2D    (GLenum target, sint32 level, sint32 xoffset, sint32 yoffset, sint32 x, sint32 y, uint32 width, uint32 height) {
+            emu_glCopyTexSubImage2D (target, level, xoffset, yoffset, x, y, width, height);
+        }
+
+        public static uint32    glCreateProgram        () {
+            return emu_glCreateProgram ();
+        }
+
+        public static uint32    glCreateShader         (GLenum type) {
+            return emu_glCreateShader (type);
+        }
+
+        public static void      glCullFace             (GLenum mode) {
+            emu_glCullFace (mode);
+        }
+
+        public static void      glDeleteBuffers        (uint32[] buffers) {
+            var n = (uint32)buffers.Length;
+            fixed(uint32* b = buffers) {
+                emu_glDeleteBuffers (n, b);
+            }
+        }
+
+        public static void      glDeleteFramebuffers   (uint32[] framebuffers) {
+            var n = (uint32)framebuffers.Length;
+            fixed(uint32* b = framebuffers) {
+                emu_glDeleteFramebuffers (n, b);
+            }
+        }
+
+        public static void      glDeleteProgram        (uint32 program) {
+            emu_glDeleteProgram (program);
+        }
+
+        public static void      glDeleteRenderbuffers  (uint32[] renderbuffers) {
+            var n = (uint32)renderbuffers.Length;
+            fixed(uint32* rb = renderbuffers) {
+                emu_glDeleteRenderbuffers (n, rb);
+            }
+        }
+
+        public static void      glDeleteShader         (uint32 shader) {
+            emu_glDeleteShader (shader);
+        }
+
+        public static void      glDeleteTextures       (uint32[] textures) {
+            var n = (uint32)textures.Length;
+            fixed(uint32* ts = textures) {
+                emu_glDeleteTextures (n, ts);
+            }
+        }
+
+        public static void      glDepthFunc            (GLenum func) {
+            emu_glDepthFunc (func);
+        }
+
+        public static void      glDepthMask            (bool flag) {
+            var b = (GLboolean)(flag ? GLenum.GL_TRUE : GLenum.GL_FALSE);
+            emu_glDepthMask (b);
+        }
+
+        public static void      glDepthRangef          (float n, float f) {
+            emu_glDepthRangef (n, f);
+        }
+
+        public static void      glDetachShader         (uint32 program, uint32 shader) {
+            emu_glDetachShader (program, shader);
+        }
+
+        public static void      glDisable              (GLenum cap) {
+            emu_glDisable (cap);
+        }
+
+        public static void      glDisableVertexAttribArray (uint32 index) {
+            emu_glDisableVertexAttribArray (index);
+        }
+
+        public static void      glDrawArrays           (GLenum mode, sint32 first, uint32 count) {
+            emu_glDrawArrays (mode, first, count);
+        }
+
+        public static void      glDrawElements         (GLenum mode, uint32 count, GLenum type, IntPtr indices) {
+            emu_glDrawElements (mode, count, type, (void*)indices);
+        }
+
+        public static void      glEnable               (GLenum cap) {
+            emu_glEnable (cap);
+        }
+
+        public static void      glEnableVertexAttribArray  (uint32 index) {
+            emu_glEnableVertexAttribArray (index);
+        }
+
+        public static void      glFinish               () {
+            emu_glFinish ();
+        }
+
+        public static void      glFlush                () {
+            emu_glFlush ();
+        }
+
+        public static void      glFramebufferRenderbuffer  (GLenum target, GLenum attachment, GLenum renderbuffertarget, uint32 renderbuffer) {
+            emu_glFramebufferRenderbuffer (target, attachment, renderbuffertarget, renderbuffer);
+        }
+
+        public static void      glFramebufferTexture2D (GLenum target, GLenum attachment, GLenum textarget, uint32 texture, sint32 level) {
+            emu_glFramebufferTexture2D (target, attachment, textarget, texture, level);
+        }
+
+        public static void      glFrontFace            (GLenum mode) {
+            emu_glFrontFace (mode);
+        }
+
+        public static uint32[]  glGenBuffers           (uint32 n) {
+            var bs = new uint32 [n];
+            fixed(uint32* b = bs) {
+                emu_glGenBuffers (n, b);
+            }
+            return bs;
+        }
+
+        public static void      glGenerateMipmap       (GLenum target) {
+            emu_glGenerateMipmap (target);
+        }
+
+        public static uint32[]  glGenFramebuffers      (uint32 n) {
+            var bs = new uint32 [n];
+            fixed(uint32* b = bs) {
+                emu_glGenFramebuffers (n, b);
+            }
+            return bs;           
+        }
+
+        public static uint32[]  glGenRenderbuffers     (uint32 n) {
+            var bs = new uint32 [n];
+            fixed(uint32* b = bs) {
+                emu_glGenRenderbuffers (n, b);
+            }
+            return bs;           
+        }
+
+        public static uint32[]  glGenTextures          (uint32 n) {
+            var bs = new uint32 [n];
+            fixed(uint32* b = bs) {
+                emu_glGenTextures (n, b);
+            }
+            return bs;           
+        }
+
+        public static GLAttribute   glGetActiveAttrib  (uint32 program, uint32 index) {
+            var name = new char[MaxStrLength];
+            int size;
+            int length;
+            GLenum glType;
+
+            fixed(char* n = name) {
+                emu_glGetActiveAttrib (program, index, MaxStrLength - 1, &length, &size, &glType, n);
+            }
+
+            var name_ = new String (name).Substring (0, length);
+
+            return new GLAttribute ((uint32)size, glType, name_);
+        }
+
+        public static GLUniform   glGetActiveUniform   (uint32 program, uint32 index) {
+            var name = new char[MaxStrLength];
+            int size;
+            int length;
+            GLenum glType;
+
+            fixed(char* n = name) {
+                emu_glGetActiveUniform (program, index, MaxStrLength - 1, &length, &size, &glType, n);
+            }
+
+            var name_ = new String (name).Substring (0, length);
+
+            return new GLUniform ((uint32)size, glType, name_);
+        }
+
+        public static uint32[]    glGetAttachedShaders  (uint32 program) {
+            var shaders = new uint32[MaxAttachedShaders];
+            int count;
+            fixed(uint32* s = shaders) {
+                emu_glGetAttachedShaders (program, MaxAttachedShaders, &count, s);
+            }
+
+            return shaders.Take (count).ToArray();
+        }
+
+        public static sint32    glGetAttribLocation    (uint32 program, string name) {
+            fixed(char *ns = name.ToCharArray()) {
+                return emu_glGetAttribLocation (program, ns);
+            }
+        }
+
+        public static bool      glGetBoolean           (GLenum pname) {
+            GLboolean b;
+            emu_glGetBooleanv (pname, &b);
+            return (b != (GLboolean)GLenum.GL_FALSE);
+        }
+
+        public static sint32    glGetBufferParameteri  (GLenum target, GLenum pname) {
+            sint32 parms;
+            emu_glGetBufferParameteriv (target, pname, &parms);
+            return parms;
+        }
+
+        public static GLenum    glGetError             () {
+            return emu_glGetError ();
+        }
+
+        public static float     glGetFloat             (GLenum pname) {
+            float v;
+            emu_glGetFloatv (pname, &v);
+            return v;
+        }
+
+        public static sint32    glGetFramebufferAttachmentParameteri (GLenum target, GLenum attachment, GLenum pname) {
+            sint32 i;
+            emu_glGetFramebufferAttachmentParameteriv (target, attachment, pname, &i);
+            return i;
+        }
+            
+        public static sint32    glGetInteger          (GLenum pname) {
+            sint32 i;
+            emu_glGetIntegerv (pname, &i);
+            return i;
+        }
+
+        public static sint32    glGetProgrami         (uint32 program, GLenum pname) {
+            sint32 p;
+            emu_glGetProgramiv (program, pname, &p);
+            return p;
+        }
+
+        public static string    glGetProgramInfoLog    (uint32 program) {
+            var log_ = new char[MaxLogSize];
+            uint32 size;
+            fixed(char* l = log_) {
+                emu_glGetProgramInfoLog (program, MaxLogSize, &size, l);
+            }
+            return new String (log_.Take ((int)size).ToArray());
+        }
+
+        public static sint32    glGetRenderbufferParameteri   (GLenum target, GLenum pname) {
+            sint32 i;
+            emu_glGetRenderbufferParameteriv(target, pname, &i);
+            return i;
+        }
+
+        public static sint32    glGetShaderi          (uint32 shader, GLenum pname) {
+            sint32 i;
+            emu_glGetShaderiv (shader, pname, &i);
+            return i;
+        }
+
+        public static string    glGetShaderInfoLog    (uint32 shader) {
+            var log_ = new char[MaxLogSize];
+            uint32 size;
+            fixed(char* l = log_) {
+                emu_glGetShaderInfoLog (shader, MaxLogSize, &size, l);
+            }
+            return new String (log_.Take ((int)size).ToArray());            
+        }
+
+        public static GLPrecision glGetShaderPrecisionFormat (GLenum shadertype, GLenum precisiontype) {
+            sint32 r;
+            sint32 p;
+            emu_glGetShaderPrecisionFormat (shadertype, precisiontype, &r, &p);
+            return new GLPrecision (r, p);
+        }
+
+        public static string      glGetShaderSource      (uint32 shader) {
+            var source_ = new char[MaxShaderSize];
+            uint32 size;
+            fixed(char* s = source_) {
+                emu_glGetShaderSource (shader, MaxShaderSize, &size, s);
+            }
+            return new String (source_.Take ((int)size).ToArray());             
+        }
+
+// this requires marshaling
+//        public static string      glGetString       (GLenum name) {
+//            var err_ = new GLubyte[MaxLogSize];
+//            uint32 size;
+//            fixed(char* s = source_) {
+//                emu_glGetString (shader, MaxShaderSize, &size, s);
+//            }
+//            return new String (source_.Take ((int)size).ToArray());             
+//        }
+
+//        public static void      emu_glGetTexParameterfv        (GL_ENUM target, GL_ENUM pname, float *params);                                                                                                     
+//        public static void      emu_glGetTexParameteriv        (GL_ENUM target, GL_ENUM pname, sint32 *params);                                                                                                    
+//        public static void      emu_glGetUniformfv         (uint32 program, sint32 location, float *params);                                                                                                   
+//        public static void      emu_glGetUniformiv         (uint32 program, sint32 location, sint32 *params);                                                                                                  
+//        public static sint32    emu_glGetUniformLocation       (uint32 program, const char *name);                                                                                                                 
+//        public static void      emu_glGetVertexAttribfv        (uint32 index, GL_ENUM pname, float *params);                                                                                                       
+//        public static void      emu_glGetVertexAttribiv        (uint32 index, GL_ENUM pname, sint32 *params);                                                                                                      
+//        public static void      emu_glGetVertexAttribPointerv  (uint32 index, GL_ENUM pname, void **pointer);                                                                                                      
+//        public static void      emu_glHint             (GL_ENUM target, GL_ENUM mode);                                                                                                                     
+//        public static GLboolean emu_glIsBuffer         (uint32 buffer);                                                                                                                                    
+//        public static GLboolean emu_glIsEnabled            (GL_ENUM cap);                                                                                                                                      
+//        public static GLboolean emu_glIsFramebuffer        (uint32 framebuffer);                                                                                                                               
+//        public static GLboolean emu_glIsProgram            (uint32 program);                                                                                                                                   
+//        public static GLboolean emu_glIsRenderbuffer       (uint32 renderbuffer);                                                                                                                              
+//        public static GLboolean emu_glIsShader         (uint32 shader);                                                                                                                                    
+//        public static GLboolean emu_glIsTexture            (uint32 texture);                                                                                                                                   
+//        public static void      emu_glLineWidth            (float width);                                                                                                                                      
+//        public static void      emu_glLinkProgram          (uint32 program);                                                                                                                                   
+//        public static void      emu_glPixelStorei          (GL_ENUM pname, sint32 param);                                                                                                                      
+//        public static void      emu_glPolygonOffset        (float factor, float units);                                                                                                                        
+//        public static void      emu_glReadPixels           (sint32 x, sint32 y, uint32 width, uint32 height, GL_ENUM format, GL_ENUM type, void *pixels);                                                      
+//        public static void      emu_glReleaseShaderCompiler    ();                                                                                                                                                 
+//        public static void      emu_glRenderbufferStorage      (GL_ENUM target, GL_ENUM internalformat, uint32 width, uint32 height);                                                                              
+//        public static void      emu_glSampleCoverage       (float value, GLboolean invert);                                                                                                                    
+//        public static void      emu_glScissor          (sint32 x, sint32 y, uint32 width, uint32 height);                                                                                                  
+//        public static void      emu_glShaderBinary         (uint32 count, const uint32 *shaders, GL_ENUM binaryformat, const void *binary, uint32 length);                                                     
+//        public static void      emu_glShaderSource         (uint32 shader, uint32 count, const char *const*string, const sint32 *length);                                                                      
+//        public static void      emu_glStencilFunc          (GL_ENUM func, sint32 ref, uint32 mask);                                                                                                            
+//        public static void      emu_glStencilFuncSeparate      (GL_ENUM face, GL_ENUM func, sint32 ref, uint32 mask);                                                                                              
+//        public static void      emu_glStencilMask          (uint32 mask);                                                                                                                                      
+//        public static void      emu_glStencilMaskSeparate      (GL_ENUM face, uint32 mask);                                                                                                                        
+//        public static void      emu_glStencilOp            (GL_ENUM fail, GL_ENUM zfail, GL_ENUM zpass);                                                                                                       
+//        public static void      emu_glStencilOpSeparate        (GL_ENUM face, GL_ENUM sfail, GL_ENUM dpfail, GL_ENUM dppass);                                                                                      
+//        public static void      emu_glTexImage2D           (GL_ENUM target, sint32 level, sint32 internalformat, uint32 width, uint32 height, sint32 border, GL_ENUM format, GL_ENUM type, const void *pixels);
+//        public static void      emu_glTexParameterf        (GL_ENUM target, GL_ENUM pname, float param);                                                                                                       
+//        public static void      emu_glTexParameterfv       (GL_ENUM target, GL_ENUM pname, const float *params);                                                                                               
+//        public static void      emu_glTexParameteri        (GL_ENUM target, GL_ENUM pname, sint32 param);                                                                                                      
+//        public static void      emu_glTexParameteriv       (GL_ENUM target, GL_ENUM pname, const sint32 *params);                                                                                              
+//        public static void      emu_glTexSubImage2D        (GL_ENUM target, sint32 level, sint32 xoffset, sint32 yoffset, uint32 width, uint32 height, GL_ENUM format, GL_ENUM type, const void *pixels);      
+//        public static void      emu_glUniform1f            (sint32 location, float v0);                                                                                                                        
+//        public static void      emu_glUniform1fv           (sint32 location, uint32 count, const float *value);                                                                                                
+//        public static void      emu_glUniform1i            (sint32 location, sint32 v0);                                                                                                                       
+//        public static void      emu_glUniform1iv           (sint32 location, uint32 count, const sint32 *value);                                                                                               
+//        public static void      emu_glUniform2f            (sint32 location, float v0, float v1);                                                                                                              
+//        public static void      emu_glUniform2fv           (sint32 location, uint32 count, const float *value);                                                                                                
+//        public static void      emu_glUniform2i            (sint32 location, sint32 v0, sint32 v1);                                                                                                            
+//        public static void      emu_glUniform2iv           (sint32 location, uint32 count, const sint32 *value);                                                                                               
+//        public static void      emu_glUniform3f            (sint32 location, float v0, float v1, float v2);                                                                                                    
+//        public static void      emu_glUniform3fv           (sint32 location, uint32 count, const float *value);                                                                                                
+//        public static void      emu_glUniform3i            (sint32 location, sint32 v0, sint32 v1, sint32 v2);                                                                                                 
+//        public static void      emu_glUniform3iv           (sint32 location, uint32 count, const sint32 *value);                                                                                               
+//        public static void      emu_glUniform4f            (sint32 location, float v0, float v1, float v2, float v3);                                                                                          
+//        public static void      emu_glUniform4fv           (sint32 location, uint32 count, const float *value);                                                                                                
+//        public static void      emu_glUniform4i            (sint32 location, sint32 v0, sint32 v1, sint32 v2, sint32 v3);                                                                                      
+//        public static void      emu_glUniform4iv           (sint32 location, uint32 count, const sint32 *value);                                                                                               
+//        public static void      emu_glUniformMatrix2fv     (sint32 location, uint32 count, GLboolean transpose, const float *value);                                                                           
+//        public static void      emu_glUniformMatrix3fv     (sint32 location, uint32 count, GLboolean transpose, const float *value);                                                                           
+//        public static void      emu_glUniformMatrix4fv     (sint32 location, uint32 count, GLboolean transpose, const float *value);                                                                           
+//        public static void      emu_glUseProgram           (uint32 program);                                                                                                                                   
+//        public static void      emu_glValidateProgram      (uint32 program);                                                                                                                                   
+//        public static void      emu_glVertexAttrib1f       (uint32 index, float x);                                                                                                                            
+//        public static void      emu_glVertexAttrib1fv      (uint32 index, const float *v);                                                                                                                     
+//        public static void      emu_glVertexAttrib2f       (uint32 index, float x, float y);                                                                                                                   
+//        public static void      emu_glVertexAttrib2fv      (uint32 index, const float *v);                                                                                                                     
+//        public static void      emu_glVertexAttrib3f       (uint32 index, float x, float y, float z);                                                                                                          
+//        public static void      emu_glVertexAttrib3fv      (uint32 index, const float *v);                                                                                                                     
+//        public static void      emu_glVertexAttrib4f       (uint32 index, float x, float y, float z, float w);                                                                                                 
+//        public static void      emu_glVertexAttrib4fv      (uint32 index, const float *v);                                                                                                                     
+//        public static void      emu_glVertexAttribPointer  (uint32 index, sint32 size, GL_ENUM type, GLboolean normalized, uint32 stride, const void *pointer);                                                
+//        public static void      emu_glViewport             (sint32 x, sint32 y, uint32 width, uint32 height);                                                                                                  
+//
+        const string DllName = @"native.dll";
+        const int MaxStrLength = 256;
+        const int MaxAttachedShaders = 64;
+        const int MaxLogSize = 65536;
+        const int MaxShaderSize = 65536;
 
         //[DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
         //[return: MarshalAs(UnmanagedType.Bool)]
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glActiveTexture        (GLenum texture);                                                                                                                                  
+        static extern void      emu_glActiveTexture        (GLenum texture);                                                                                                                                  
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glAttachShader         (uint32 program, uint32 shader);                                                                                                                    
+        static extern void      emu_glAttachShader         (uint32 program, uint32 shader);                                                                                                                    
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glBindAttribLocation       (uint32 program, uint32 index, char *name);                                                                                                   
+        static extern void      emu_glBindAttribLocation       (uint32 program, uint32 index, char *name);                                                                                                   
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glBindBuffer           (GLenum target, uint32 buffer);
+        static extern void      emu_glBindBuffer           (GLenum target, uint32 buffer);
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glBindFramebuffer      (GLenum target, uint32 framebuffer);                                                                                                               
+        static extern void      emu_glBindFramebuffer      (GLenum target, uint32 framebuffer);                                                                                                               
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glBindRenderbuffer     (GLenum target, uint32 renderbuffer);                                                                                                              
+        static extern void      emu_glBindRenderbuffer     (GLenum target, uint32 renderbuffer);                                                                                                              
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glBindTexture          (GLenum target, uint32 texture);                                                                                                                   
+        static extern void      emu_glBindTexture          (GLenum target, uint32 texture);                                                                                                                   
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glBlendColor           (float red, float green, float blue, float alpha);                                                                                                  
+        static extern void      emu_glBlendColor           (float red, float green, float blue, float alpha);                                                                                                  
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glBlendEquation        (GLenum mode);                                                                                                                                     
+        static extern void      emu_glBlendEquation        (GLenum mode);                                                                                                                                     
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glBlendEquationSeparate    (GLenum modeRGB, GLenum modeAlpha);                                                                                                               
+        static extern void      emu_glBlendEquationSeparate    (GLenum modeRGB, GLenum modeAlpha);                                                                                                               
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glBlendFunc            (GLenum sfactor, GLenum dfactor);                                                                                                                 
+        static extern void      emu_glBlendFunc            (GLenum sfactor, GLenum dfactor);                                                                                                                 
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glBlendFuncSeparate    (GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha);                                                               
+        static extern void      emu_glBlendFuncSeparate    (GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha);                                                               
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glBufferData           (GLenum target, uint32 size, void *data, GLenum usage);                                                                                     
+        static extern void      emu_glBufferData           (GLenum target, uint32 size, void *data, GLenum usage);                                                                                     
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glBufferSubData        (GLenum target, uint32 offset, uint32 size, void *data);                                                                                     
+        static extern void      emu_glBufferSubData        (GLenum target, uint32 offset, uint32 size, void *data);                                                                                     
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern GLenum    emu_glCheckFramebufferStatus   (GLenum target);
+        static extern GLenum    emu_glCheckFramebufferStatus   (GLenum target);
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glClear                 (uint32 mask);
+        static extern void      emu_glClear                 (uint32 mask);
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glClearColor           (float red, float green, float blue, float alpha);                                                                                                  
+        static extern void      emu_glClearColor           (float red, float green, float blue, float alpha);                                                                                                  
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glClearDepthf          (float d);                                                                                                                                          
+        static extern void      emu_glClearDepthf          (float d);                                                                                                                                          
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glClearStencil         (sint32 s);                                                                                                                                         
+        static extern void      emu_glClearStencil         (sint32 s);                                                                                                                                         
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glColorMask            (GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha);                                                                                  
+        static extern void      emu_glColorMask            (GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha);                                                                                  
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glCompileShader        (uint32 shader);                                                                                                                                    
+        static extern void      emu_glCompileShader        (uint32 shader);                                                                                                                                    
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glCompressedTexImage2D (GLenum target, sint32 level, GLenum internalformat, uint32 width, uint32 height, sint32 border, uint32 imageSize, void *data);             
+        static extern void      emu_glCompressedTexImage2D (GLenum target, sint32 level, GLenum internalformat, uint32 width, uint32 height, sint32 border, uint32 imageSize, void *data);             
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glCompressedTexSubImage2D  (GLenum target, sint32 level, sint32 xoffset, sint32 yoffset, uint32 width, uint32 height, GLenum format, uint32 imageSize, void *data);    
+        static extern void      emu_glCompressedTexSubImage2D  (GLenum target, sint32 level, sint32 xoffset, sint32 yoffset, uint32 width, uint32 height, GLenum format, uint32 imageSize, void *data);    
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glCopyTexImage2D       (GLenum target, sint32 level, GLenum internalformat, sint32 x, sint32 y, uint32 width, uint32 height, sint32 border);                             
+        static extern void      emu_glCopyTexImage2D       (GLenum target, sint32 level, GLenum internalformat, sint32 x, sint32 y, uint32 width, uint32 height, sint32 border);                             
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glCopyTexSubImage2D    (GLenum target, sint32 level, sint32 xoffset, sint32 yoffset, sint32 x, sint32 y, uint32 width, uint32 height);                                    
+        static extern void      emu_glCopyTexSubImage2D    (GLenum target, sint32 level, sint32 xoffset, sint32 yoffset, sint32 x, sint32 y, uint32 width, uint32 height);                                    
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern uint32    emu_glCreateProgram        ();                                                                                                                                                 
+        static extern uint32    emu_glCreateProgram        ();                                                                                                                                                 
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern uint32    emu_glCreateShader         (GLenum type);                                                                                                                                     
+        static extern uint32    emu_glCreateShader         (GLenum type);                                                                                                                                     
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glCullFace             (GLenum mode);
+        static extern void      emu_glCullFace             (GLenum mode);
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glDeleteBuffers        (uint32 n, uint32 *buffers);
+        static extern void      emu_glDeleteBuffers        (uint32 n, uint32 *buffers);
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glDeleteFramebuffers   (uint32 n, uint32 *framebuffers);                                                                                                             
+        static extern void      emu_glDeleteFramebuffers   (uint32 n, uint32 *framebuffers);                                                                                                             
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glDeleteProgram        (uint32 program);                                                                                                                                   
+        static extern void      emu_glDeleteProgram        (uint32 program);                                                                                                                                   
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glDeleteRenderbuffers  (uint32 n, uint32 *renderbuffers);                                                                                                            
+        static extern void      emu_glDeleteRenderbuffers  (uint32 n, uint32 *renderbuffers);                                                                                                            
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glDeleteShader         (uint32 shader);                                                                                                                                    
+        static extern void      emu_glDeleteShader         (uint32 shader);                                                                                                                                    
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glDeleteTextures       (uint32 n, uint32 *textures);                                                                                                                 
+        static extern void      emu_glDeleteTextures       (uint32 n, uint32 *textures);                                                                                                                 
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glDepthFunc            (GLenum func);
+        static extern void      emu_glDepthFunc            (GLenum func);
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glDepthMask            (GLboolean flag);
+        static extern void      emu_glDepthMask            (GLboolean flag);
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glDepthRangef          (float n, float f);                                                                                                                                 
+        static extern void      emu_glDepthRangef          (float n, float f);                                                                                                                                 
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glDetachShader         (uint32 program, uint32 shader);                                                                                                                    
+        static extern void      emu_glDetachShader         (uint32 program, uint32 shader);                                                                                                                    
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glDisable              (GLenum cap);                                                                                                                                      
+        static extern void      emu_glDisable              (GLenum cap);                                                                                                                                      
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glDisableVertexAttribArray (uint32 index);                                                                                                                                     
+        static extern void      emu_glDisableVertexAttribArray (uint32 index);                                                                                                                                     
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glDrawArrays           (GLenum mode, sint32 first, uint32 count);                                                                                                         
+        static extern void      emu_glDrawArrays           (GLenum mode, sint32 first, uint32 count);                                                                                                         
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glDrawElements         (GLenum mode, uint32 count, GLenum type, void *indices);                                                                                    
+        static extern void      emu_glDrawElements         (GLenum mode, uint32 count, GLenum type, void *indices);                                                                                    
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glEnable               (GLenum cap);                                                                                                                                      
+        static extern void      emu_glEnable               (GLenum cap);                                                                                                                                      
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glEnableVertexAttribArray  (uint32 index);                                                                                                                                     
+        static extern void      emu_glEnableVertexAttribArray  (uint32 index);                                                                                                                                     
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glFinish               ();                                                                                                                                                 
+        static extern void      emu_glFinish               ();                                                                                                                                                 
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glFlush                ();                                                                                                                                                 
+        static extern void      emu_glFlush                ();                                                                                                                                                 
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glFramebufferRenderbuffer  (GLenum target, GLenum attachment, GLenum renderbuffertarget, uint32 renderbuffer);                                                              
+        static extern void      emu_glFramebufferRenderbuffer  (GLenum target, GLenum attachment, GLenum renderbuffertarget, uint32 renderbuffer);                                                              
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glFramebufferTexture2D     (GLenum target, GLenum attachment, GLenum textarget, uint32 texture, sint32 level);                                                              
+        static extern void      emu_glFramebufferTexture2D     (GLenum target, GLenum attachment, GLenum textarget, uint32 texture, sint32 level);                                                              
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glFrontFace            (GLenum mode);                                                                                                                                     
+        static extern void      emu_glFrontFace            (GLenum mode);                                                                                                                                     
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glGenBuffers           (uint32 n, uint32 *buffers);                                                                                                                        
+        static extern void      emu_glGenBuffers           (uint32 n, uint32 *buffers);                                                                                                                        
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glGenerateMipmap       (GLenum target);                                                                                                                                   
+        static extern void      emu_glGenerateMipmap       (GLenum target);                                                                                                                                   
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glGenFramebuffers      (uint32 n, uint32 *framebuffers);                                                                                                                   
+        static extern void      emu_glGenFramebuffers      (uint32 n, uint32 *framebuffers);                                                                                                                   
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glGenRenderbuffers     (uint32 n, uint32 *renderbuffers);                                                                                                                  
+        static extern void      emu_glGenRenderbuffers     (uint32 n, uint32 *renderbuffers);                                                                                                                  
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glGenTextures          (uint32 n, uint32 *textures);                                                                                                                       
+        static extern void      emu_glGenTextures          (uint32 n, uint32 *textures);                                                                                                                       
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glGetActiveAttrib      (uint32 program, uint32 index, uint32 bufSize, sint32 *length, sint32 *size, GLenum *type, char *name);                                            
+        static extern void      emu_glGetActiveAttrib      (uint32 program, uint32 index, uint32 bufSize, sint32 *length, sint32 *size, GLenum *type, char *name);                                            
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glGetActiveUniform     (uint32 program, uint32 index, uint32 bufSize, sint32 *length, sint32 *size, GLenum *type, char *name);                                            
+        static extern void      emu_glGetActiveUniform     (uint32 program, uint32 index, uint32 bufSize, sint32 *length, sint32 *size, GLenum *type, char *name);                                            
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glGetAttachedShaders   (uint32 program, uint32 maxCount, sint32 *count, uint32 *shaders);                                                                                  
+        static extern void      emu_glGetAttachedShaders   (uint32 program, uint32 maxCount, sint32 *count, uint32 *shaders);                                                                                  
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern sint32    emu_glGetAttribLocation    (uint32 program, char *name);                                                                                                                 
+        static extern sint32    emu_glGetAttribLocation    (uint32 program, char *name);                                                                                                                 
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glGetBooleanv          (GLenum pname, GLboolean *data);                                                                                                                   
+        static extern void      emu_glGetBooleanv          (GLenum pname, GLboolean *data);                                                                                                                   
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glGetBufferParameteriv (GLenum target, GLenum pname, sint32 *parms);
+        static extern void      emu_glGetBufferParameteriv (GLenum target, GLenum pname, sint32 *parms);
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern GLenum    emu_glGetError             ();                                                                                                                                                 
+        static extern GLenum    emu_glGetError             ();                                                                                                                                                 
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glGetFloatv            (GLenum pname, float *data);                                                                                                                       
+        static extern void      emu_glGetFloatv            (GLenum pname, float *data);                                                                                                                       
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glGetFramebufferAttachmentParameteriv (GLenum target, GLenum attachment, GLenum pname, sint32 *parms);                                                                         
+        static extern void      emu_glGetFramebufferAttachmentParameteriv (GLenum target, GLenum attachment, GLenum pname, sint32 *parms);                                                                         
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glGetIntegerv          (GLenum pname, sint32 *data);                                                                                                                      
+        static extern void      emu_glGetIntegerv          (GLenum pname, sint32 *data);                                                                                                                      
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glGetProgramiv         (uint32 program, GLenum pname, sint32 *parms);                                                                                                    
+        static extern void      emu_glGetProgramiv         (uint32 program, GLenum pname, sint32 *parms);                                                                                                    
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glGetProgramInfoLog    (uint32 program, uint32 bufSize, uint32 *length, char *infoLog);                                                                                    
+        static extern void      emu_glGetProgramInfoLog    (uint32 program, uint32 bufSize, uint32 *length, char *infoLog);                                                                                    
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glGetRenderbufferParameteriv   (GLenum target, GLenum pname, sint32 *parms);                                                                                                    
+        static extern void      emu_glGetRenderbufferParameteriv   (GLenum target, GLenum pname, sint32 *parms);                                                                                                    
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glGetShaderiv          (uint32 shader, GLenum pname, sint32 *parms);                                                                                                     
+        static extern void      emu_glGetShaderiv          (uint32 shader, GLenum pname, sint32 *parms);                                                                                                     
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glGetShaderInfoLog     (uint32 shader, uint32 bufSize, uint32 *length, char *infoLog);                                                                                     
+        static extern void      emu_glGetShaderInfoLog     (uint32 shader, uint32 bufSize, uint32 *length, char *infoLog);                                                                                     
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glGetShaderPrecisionFormat (GLenum shadertype, GLenum precisiontype, sint32 *range, sint32 *precision);                                                                      
+        static extern void      emu_glGetShaderPrecisionFormat (GLenum shadertype, GLenum precisiontype, sint32 *range, sint32 *precision);                                                                      
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glGetShaderSource      (uint32 shader, uint32 bufSize, uint32 *length, char *source);                                                                                      
+        static extern void      emu_glGetShaderSource      (uint32 shader, uint32 bufSize, uint32 *length, char *source);                                                                                      
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern GLubyte*  emu_glGetString            (GLenum name);                                                                                                                                     
+        static extern GLubyte*  emu_glGetString            (GLenum name);                                                                                                                                     
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glGetTexParameterfv    (GLenum target, GLenum pname, float *parms);                                                                                                     
+        static extern void      emu_glGetTexParameterfv    (GLenum target, GLenum pname, float *parms);                                                                                                     
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glGetTexParameteriv    (GLenum target, GLenum pname, sint32 *parms);                                                                                                    
+        static extern void      emu_glGetTexParameteriv    (GLenum target, GLenum pname, sint32 *parms);                                                                                                    
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glGetUniformfv         (uint32 program, sint32 location, float *parms);                                                                                                   
+        static extern void      emu_glGetUniformfv         (uint32 program, sint32 location, float *parms);                                                                                                   
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glGetUniformiv         (uint32 program, sint32 location, sint32 *parms);                                                                                                  
+        static extern void      emu_glGetUniformiv         (uint32 program, sint32 location, sint32 *parms);                                                                                                  
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern sint32    emu_glGetUniformLocation   (uint32 program, char *name);                                                                                                                 
+        static extern sint32    emu_glGetUniformLocation   (uint32 program, char *name);                                                                                                                 
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glGetVertexAttribfv     (uint32 index, GLenum pname, float *parms);                                                                                                       
+        static extern void      emu_glGetVertexAttribfv     (uint32 index, GLenum pname, float *parms);                                                                                                       
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glGetVertexAttribiv     (uint32 index, GLenum pname, sint32 *parms);                                                                                                      
+        static extern void      emu_glGetVertexAttribiv     (uint32 index, GLenum pname, sint32 *parms);                                                                                                      
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glGetVertexAttribPointerv  (uint32 index, GLenum pname, void **pointer);                                                                                                      
+        static extern void      emu_glGetVertexAttribPointerv  (uint32 index, GLenum pname, void **pointer);                                                                                                      
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glHint                  (GLenum target, GLenum mode);                                                                                                                     
+        static extern void      emu_glHint                  (GLenum target, GLenum mode);                                                                                                                     
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern GLboolean emu_glIsBuffer              (uint32 buffer);                                                                                                                                    
+        static extern GLboolean emu_glIsBuffer              (uint32 buffer);                                                                                                                                    
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern GLboolean emu_glIsEnabled             (GLenum cap);                                                                                                                                      
+        static extern GLboolean emu_glIsEnabled             (GLenum cap);                                                                                                                                      
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern GLboolean emu_glIsFramebuffer        (uint32 framebuffer);                                                                                                                               
+        static extern GLboolean emu_glIsFramebuffer        (uint32 framebuffer);                                                                                                                               
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern GLboolean emu_glIsProgram            (uint32 program);                                                                                                                                   
+        static extern GLboolean emu_glIsProgram            (uint32 program);                                                                                                                                   
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern GLboolean emu_glIsRenderbuffer       (uint32 renderbuffer);                                                                                                                              
+        static extern GLboolean emu_glIsRenderbuffer       (uint32 renderbuffer);                                                                                                                              
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern GLboolean emu_glIsShader             (uint32 shader);                                                                                                                                    
+        static extern GLboolean emu_glIsShader             (uint32 shader);                                                                                                                                    
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern GLboolean emu_glIsTexture            (uint32 texture);                                                                                                                                   
+        static extern GLboolean emu_glIsTexture            (uint32 texture);                                                                                                                                   
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glLineWidth            (float width);                                                                                                                                      
+        static extern void      emu_glLineWidth            (float width);                                                                                                                                      
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glLinkProgram          (uint32 program);                                                                                                                                   
+        static extern void      emu_glLinkProgram          (uint32 program);                                                                                                                                   
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glPixelStorei          (GLenum pname, sint32 param);                                                                                                                      
+        static extern void      emu_glPixelStorei          (GLenum pname, sint32 param);                                                                                                                      
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glPolygonOffset        (float factor, float units);                                                                                                                        
+        static extern void      emu_glPolygonOffset        (float factor, float units);                                                                                                                        
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glReadPixels           (sint32 x, sint32 y, uint32 width, uint32 height, GLenum format, GLenum type, void *pixels);                                                      
+        static extern void      emu_glReadPixels           (sint32 x, sint32 y, uint32 width, uint32 height, GLenum format, GLenum type, void *pixels);                                                      
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glReleaseShaderCompiler();                                                                                                                                                 
+        static extern void      emu_glReleaseShaderCompiler();                                                                                                                                                 
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glRenderbufferStorage  (GLenum target, GLenum internalformat, uint32 width, uint32 height);                                                                              
+        static extern void      emu_glRenderbufferStorage  (GLenum target, GLenum internalformat, uint32 width, uint32 height);                                                                              
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glSampleCoverage       (float value, GLboolean invert);                                                                                                                    
+        static extern void      emu_glSampleCoverage       (float value, GLboolean invert);                                                                                                                    
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glScissor              (sint32 x, sint32 y, uint32 width, uint32 height);                                                                                                  
+        static extern void      emu_glScissor              (sint32 x, sint32 y, uint32 width, uint32 height);                                                                                                  
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glShaderBinary         (uint32 count, uint32 *shaders, GLenum binaryformat, void *binary, uint32 length);                                                     
+        static extern void      emu_glShaderBinary         (uint32 count, uint32 *shaders, GLenum binaryformat, void *binary, uint32 length);                                                     
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glShaderSource         (uint32 shader, uint32 count, char **str, sint32 *length);                                                                      
+        static extern void      emu_glShaderSource         (uint32 shader, uint32 count, char **str, sint32 *length);                                                                      
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glStencilFunc          (GLenum func, sint32 ref_, uint32 mask);                                                                                                            
+        static extern void      emu_glStencilFunc          (GLenum func, sint32 ref_, uint32 mask);                                                                                                            
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glStencilFuncSeparate  (GLenum face, GLenum func, sint32 ref_, uint32 mask);                                                                                              
+        static extern void      emu_glStencilFuncSeparate  (GLenum face, GLenum func, sint32 ref_, uint32 mask);                                                                                              
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glStencilMask          (uint32 mask);                                                                                                                                      
+        static extern void      emu_glStencilMask          (uint32 mask);                                                                                                                                      
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glStencilMaskSeparate  (GLenum face, uint32 mask);                                                                                                                        
+        static extern void      emu_glStencilMaskSeparate  (GLenum face, uint32 mask);                                                                                                                        
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glStencilOp            (GLenum fail, GLenum zfail, GLenum zpass);                                                                                                       
+        static extern void      emu_glStencilOp            (GLenum fail, GLenum zfail, GLenum zpass);                                                                                                       
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glStencilOpSeparate    (GLenum face, GLenum sfail, GLenum dpfail, GLenum dppass);                                                                                      
+        static extern void      emu_glStencilOpSeparate    (GLenum face, GLenum sfail, GLenum dpfail, GLenum dppass);                                                                                      
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glTexImage2D           (GLenum target, sint32 level, sint32 internalformat, uint32 width, uint32 height, sint32 border, GLenum format, GLenum type, void *pixels);
+        static extern void      emu_glTexImage2D           (GLenum target, sint32 level, sint32 internalformat, uint32 width, uint32 height, sint32 border, GLenum format, GLenum type, void *pixels);
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glTexParameterf        (GLenum target, GLenum pname, float param);                                                                                                       
+        static extern void      emu_glTexParameterf        (GLenum target, GLenum pname, float param);                                                                                                       
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glTexParameterfv       (GLenum target, GLenum pname, float *parms);                                                                                               
+        static extern void      emu_glTexParameterfv       (GLenum target, GLenum pname, float *parms);                                                                                               
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glTexParameteri        (GLenum target, GLenum pname, sint32 param);                                                                                                      
+        static extern void      emu_glTexParameteri        (GLenum target, GLenum pname, sint32 param);                                                                                                      
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glTexParameteriv       (GLenum target, GLenum pname, sint32 *parms);                                                                                              
+        static extern void      emu_glTexParameteriv       (GLenum target, GLenum pname, sint32 *parms);                                                                                              
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glTexSubImage2D        (GLenum target, sint32 level, sint32 xoffset, sint32 yoffset, uint32 width, uint32 height, GLenum format, GLenum type, void *pixels);      
+        static extern void      emu_glTexSubImage2D        (GLenum target, sint32 level, sint32 xoffset, sint32 yoffset, uint32 width, uint32 height, GLenum format, GLenum type, void *pixels);      
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glUniform1f            (sint32 location, float v0);                                                                                                                        
+        static extern void      emu_glUniform1f            (sint32 location, float v0);                                                                                                                        
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glUniform1fv           (sint32 location, uint32 count, float *value);                                                                                                
+        static extern void      emu_glUniform1fv           (sint32 location, uint32 count, float *value);                                                                                                
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glUniform1i            (sint32 location, sint32 v0);                                                                                                                       
+        static extern void      emu_glUniform1i            (sint32 location, sint32 v0);                                                                                                                       
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glUniform1iv           (sint32 location, uint32 count, sint32 *value);                                                                                               
+        static extern void      emu_glUniform1iv           (sint32 location, uint32 count, sint32 *value);                                                                                               
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glUniform2f            (sint32 location, float v0, float v1);                                                                                                              
+        static extern void      emu_glUniform2f            (sint32 location, float v0, float v1);                                                                                                              
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glUniform2fv           (sint32 location, uint32 count, float *value);                                                                                                
+        static extern void      emu_glUniform2fv           (sint32 location, uint32 count, float *value);                                                                                                
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glUniform2i            (sint32 location, sint32 v0, sint32 v1);                                                                                                            
+        static extern void      emu_glUniform2i            (sint32 location, sint32 v0, sint32 v1);                                                                                                            
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glUniform2iv           (sint32 location, uint32 count, sint32 *value);                                                                                               
+        static extern void      emu_glUniform2iv           (sint32 location, uint32 count, sint32 *value);                                                                                               
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glUniform3f            (sint32 location, float v0, float v1, float v2);                                                                                                    
+        static extern void      emu_glUniform3f            (sint32 location, float v0, float v1, float v2);                                                                                                    
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glUniform3fv           (sint32 location, uint32 count, float *value);                                                                                                
+        static extern void      emu_glUniform3fv           (sint32 location, uint32 count, float *value);                                                                                                
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glUniform3i            (sint32 location, sint32 v0, sint32 v1, sint32 v2);                                                                                                 
+        static extern void      emu_glUniform3i            (sint32 location, sint32 v0, sint32 v1, sint32 v2);                                                                                                 
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glUniform3iv           (sint32 location, uint32 count, sint32 *value);                                                                                               
+        static extern void      emu_glUniform3iv           (sint32 location, uint32 count, sint32 *value);                                                                                               
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glUniform4f            (sint32 location, float v0, float v1, float v2, float v3);                                                                                          
+        static extern void      emu_glUniform4f            (sint32 location, float v0, float v1, float v2, float v3);                                                                                          
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glUniform4fv           (sint32 location, uint32 count, float *value);                                                                                                
+        static extern void      emu_glUniform4fv           (sint32 location, uint32 count, float *value);                                                                                                
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glUniform4i            (sint32 location, sint32 v0, sint32 v1, sint32 v2, sint32 v3);                                                                                      
+        static extern void      emu_glUniform4i            (sint32 location, sint32 v0, sint32 v1, sint32 v2, sint32 v3);                                                                                      
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glUniform4iv           (sint32 location, uint32 count, sint32 *value);                                                                                               
+        static extern void      emu_glUniform4iv           (sint32 location, uint32 count, sint32 *value);                                                                                               
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glUniformMatrix2fv     (sint32 location, uint32 count, GLboolean transpose, float *value);                                                                           
+        static extern void      emu_glUniformMatrix2fv     (sint32 location, uint32 count, GLboolean transpose, float *value);                                                                           
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glUniformMatrix3fv     (sint32 location, uint32 count, GLboolean transpose, float *value);                                                                           
+        static extern void      emu_glUniformMatrix3fv     (sint32 location, uint32 count, GLboolean transpose, float *value);                                                                           
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glUniformMatrix4fv     (sint32 location, uint32 count, GLboolean transpose, float *value);                                                                           
+        static extern void      emu_glUniformMatrix4fv     (sint32 location, uint32 count, GLboolean transpose, float *value);                                                                           
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glUseProgram           (uint32 program);                                                                                                                                   
+        static extern void      emu_glUseProgram           (uint32 program);                                                                                                                                   
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glValidateProgram      (uint32 program);                                                                                                                                   
+        static extern void      emu_glValidateProgram      (uint32 program);                                                                                                                                   
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glVertexAttrib1f       (uint32 index, float x);                                                                                                                            
+        static extern void      emu_glVertexAttrib1f       (uint32 index, float x);                                                                                                                            
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glVertexAttrib1fv      (uint32 index, float *v);                                                                                                                     
+        static extern void      emu_glVertexAttrib1fv      (uint32 index, float *v);                                                                                                                     
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glVertexAttrib2f       (uint32 index, float x, float y);                                                                                                                   
+        static extern void      emu_glVertexAttrib2f       (uint32 index, float x, float y);                                                                                                                   
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glVertexAttrib2fv      (uint32 index, float *v);                                                                                                                     
+        static extern void      emu_glVertexAttrib2fv      (uint32 index, float *v);                                                                                                                     
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glVertexAttrib3f       (uint32 index, float x, float y, float z);                                                                                                          
+        static extern void      emu_glVertexAttrib3f       (uint32 index, float x, float y, float z);                                                                                                          
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glVertexAttrib3fv      (uint32 index, float *v);                                                                                                                     
+        static extern void      emu_glVertexAttrib3fv      (uint32 index, float *v);                                                                                                                     
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glVertexAttrib4f       (uint32 index, float x, float y, float z, float w);                                                                                                 
+        static extern void      emu_glVertexAttrib4f       (uint32 index, float x, float y, float z, float w);                                                                                                 
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glVertexAttrib4fv      (uint32 index, float *v);                                                                                                                     
+        static extern void      emu_glVertexAttrib4fv      (uint32 index, float *v);                                                                                                                     
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glVertexAttribPointer      (uint32 index, sint32 size, GLenum type, GLboolean normalized, uint32 stride, void *pointer);                                                
+        static extern void      emu_glVertexAttribPointer      (uint32 index, sint32 size, GLenum type, GLboolean normalized, uint32 stride, void *pointer);                                                
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void      emu_glViewport         (sint32 x, sint32 y, uint32 width, uint32 height);                                                                                                  
+        static extern void      emu_glViewport         (sint32 x, sint32 y, uint32 width, uint32 height);                                                                                                  
     }
 }
