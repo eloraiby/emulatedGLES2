@@ -760,76 +760,307 @@ namespace Render
 //            return new String (source_.Take ((int)size).ToArray());             
 //        }
 
-//        public static void      emu_glGetTexParameterfv        (GL_ENUM target, GL_ENUM pname, float *params);                                                                                                     
-//        public static void      emu_glGetTexParameteriv        (GL_ENUM target, GL_ENUM pname, sint32 *params);                                                                                                    
-//        public static void      emu_glGetUniformfv         (uint32 program, sint32 location, float *params);                                                                                                   
-//        public static void      emu_glGetUniformiv         (uint32 program, sint32 location, sint32 *params);                                                                                                  
-//        public static sint32    emu_glGetUniformLocation       (uint32 program, const char *name);                                                                                                                 
-//        public static void      emu_glGetVertexAttribfv        (uint32 index, GL_ENUM pname, float *params);                                                                                                       
-//        public static void      emu_glGetVertexAttribiv        (uint32 index, GL_ENUM pname, sint32 *params);                                                                                                      
-//        public static void      emu_glGetVertexAttribPointerv  (uint32 index, GL_ENUM pname, void **pointer);                                                                                                      
-//        public static void      emu_glHint             (GL_ENUM target, GL_ENUM mode);                                                                                                                     
-//        public static GLboolean emu_glIsBuffer         (uint32 buffer);                                                                                                                                    
-//        public static GLboolean emu_glIsEnabled            (GL_ENUM cap);                                                                                                                                      
-//        public static GLboolean emu_glIsFramebuffer        (uint32 framebuffer);                                                                                                                               
-//        public static GLboolean emu_glIsProgram            (uint32 program);                                                                                                                                   
-//        public static GLboolean emu_glIsRenderbuffer       (uint32 renderbuffer);                                                                                                                              
-//        public static GLboolean emu_glIsShader         (uint32 shader);                                                                                                                                    
-//        public static GLboolean emu_glIsTexture            (uint32 texture);                                                                                                                                   
-//        public static void      emu_glLineWidth            (float width);                                                                                                                                      
-//        public static void      emu_glLinkProgram          (uint32 program);                                                                                                                                   
-//        public static void      emu_glPixelStorei          (GL_ENUM pname, sint32 param);                                                                                                                      
-//        public static void      emu_glPolygonOffset        (float factor, float units);                                                                                                                        
-//        public static void      emu_glReadPixels           (sint32 x, sint32 y, uint32 width, uint32 height, GL_ENUM format, GL_ENUM type, void *pixels);                                                      
-//        public static void      emu_glReleaseShaderCompiler    ();                                                                                                                                                 
-//        public static void      emu_glRenderbufferStorage      (GL_ENUM target, GL_ENUM internalformat, uint32 width, uint32 height);                                                                              
-//        public static void      emu_glSampleCoverage       (float value, GLboolean invert);                                                                                                                    
-//        public static void      emu_glScissor          (sint32 x, sint32 y, uint32 width, uint32 height);                                                                                                  
-//        public static void      emu_glShaderBinary         (uint32 count, const uint32 *shaders, GL_ENUM binaryformat, const void *binary, uint32 length);                                                     
-//        public static void      emu_glShaderSource         (uint32 shader, uint32 count, const char *const*string, const sint32 *length);                                                                      
-//        public static void      emu_glStencilFunc          (GL_ENUM func, sint32 ref, uint32 mask);                                                                                                            
-//        public static void      emu_glStencilFuncSeparate      (GL_ENUM face, GL_ENUM func, sint32 ref, uint32 mask);                                                                                              
-//        public static void      emu_glStencilMask          (uint32 mask);                                                                                                                                      
-//        public static void      emu_glStencilMaskSeparate      (GL_ENUM face, uint32 mask);                                                                                                                        
-//        public static void      emu_glStencilOp            (GL_ENUM fail, GL_ENUM zfail, GL_ENUM zpass);                                                                                                       
-//        public static void      emu_glStencilOpSeparate        (GL_ENUM face, GL_ENUM sfail, GL_ENUM dpfail, GL_ENUM dppass);                                                                                      
-//        public static void      emu_glTexImage2D           (GL_ENUM target, sint32 level, sint32 internalformat, uint32 width, uint32 height, sint32 border, GL_ENUM format, GL_ENUM type, const void *pixels);
-//        public static void      emu_glTexParameterf        (GL_ENUM target, GL_ENUM pname, float param);                                                                                                       
-//        public static void      emu_glTexParameterfv       (GL_ENUM target, GL_ENUM pname, const float *params);                                                                                               
-//        public static void      emu_glTexParameteri        (GL_ENUM target, GL_ENUM pname, sint32 param);                                                                                                      
-//        public static void      emu_glTexParameteriv       (GL_ENUM target, GL_ENUM pname, const sint32 *params);                                                                                              
-//        public static void      emu_glTexSubImage2D        (GL_ENUM target, sint32 level, sint32 xoffset, sint32 yoffset, uint32 width, uint32 height, GL_ENUM format, GL_ENUM type, const void *pixels);      
-//        public static void      emu_glUniform1f            (sint32 location, float v0);                                                                                                                        
-//        public static void      emu_glUniform1fv           (sint32 location, uint32 count, const float *value);                                                                                                
-//        public static void      emu_glUniform1i            (sint32 location, sint32 v0);                                                                                                                       
-//        public static void      emu_glUniform1iv           (sint32 location, uint32 count, const sint32 *value);                                                                                               
-//        public static void      emu_glUniform2f            (sint32 location, float v0, float v1);                                                                                                              
-//        public static void      emu_glUniform2fv           (sint32 location, uint32 count, const float *value);                                                                                                
-//        public static void      emu_glUniform2i            (sint32 location, sint32 v0, sint32 v1);                                                                                                            
-//        public static void      emu_glUniform2iv           (sint32 location, uint32 count, const sint32 *value);                                                                                               
-//        public static void      emu_glUniform3f            (sint32 location, float v0, float v1, float v2);                                                                                                    
-//        public static void      emu_glUniform3fv           (sint32 location, uint32 count, const float *value);                                                                                                
-//        public static void      emu_glUniform3i            (sint32 location, sint32 v0, sint32 v1, sint32 v2);                                                                                                 
-//        public static void      emu_glUniform3iv           (sint32 location, uint32 count, const sint32 *value);                                                                                               
-//        public static void      emu_glUniform4f            (sint32 location, float v0, float v1, float v2, float v3);                                                                                          
-//        public static void      emu_glUniform4fv           (sint32 location, uint32 count, const float *value);                                                                                                
-//        public static void      emu_glUniform4i            (sint32 location, sint32 v0, sint32 v1, sint32 v2, sint32 v3);                                                                                      
-//        public static void      emu_glUniform4iv           (sint32 location, uint32 count, const sint32 *value);                                                                                               
-//        public static void      emu_glUniformMatrix2fv     (sint32 location, uint32 count, GLboolean transpose, const float *value);                                                                           
-//        public static void      emu_glUniformMatrix3fv     (sint32 location, uint32 count, GLboolean transpose, const float *value);                                                                           
-//        public static void      emu_glUniformMatrix4fv     (sint32 location, uint32 count, GLboolean transpose, const float *value);                                                                           
-//        public static void      emu_glUseProgram           (uint32 program);                                                                                                                                   
-//        public static void      emu_glValidateProgram      (uint32 program);                                                                                                                                   
-//        public static void      emu_glVertexAttrib1f       (uint32 index, float x);                                                                                                                            
-//        public static void      emu_glVertexAttrib1fv      (uint32 index, const float *v);                                                                                                                     
-//        public static void      emu_glVertexAttrib2f       (uint32 index, float x, float y);                                                                                                                   
-//        public static void      emu_glVertexAttrib2fv      (uint32 index, const float *v);                                                                                                                     
-//        public static void      emu_glVertexAttrib3f       (uint32 index, float x, float y, float z);                                                                                                          
-//        public static void      emu_glVertexAttrib3fv      (uint32 index, const float *v);                                                                                                                     
-//        public static void      emu_glVertexAttrib4f       (uint32 index, float x, float y, float z, float w);                                                                                                 
-//        public static void      emu_glVertexAttrib4fv      (uint32 index, const float *v);                                                                                                                     
-//        public static void      emu_glVertexAttribPointer  (uint32 index, sint32 size, GL_ENUM type, GLboolean normalized, uint32 stride, const void *pointer);                                                
-//        public static void      emu_glViewport             (sint32 x, sint32 y, uint32 width, uint32 height);                                                                                                  
+        public static float     glGetTexParameterf     (GLenum target, GLenum pname) {
+            float f;
+            emu_glGetTexParameterfv(target, pname, &f);
+            return f;
+        }
+
+        public static sint32    glGetTexParameteri     (GLenum target, GLenum pname) {
+            sint32 i;
+            emu_glGetTexParameteriv(target, pname, &i);
+            return i;
+        }
+
+        public static float[]   glGetUniformf          (uint32 program, sint32 location) {
+            var fla = new float[4];
+            fixed(float *f = fla) {
+                emu_glGetUniformfv (program, location, f);
+            }
+            return fla;
+        }
+            
+        public static sint32[]  glGetUniformi          (uint32 program, sint32 location) {
+            var ia = new sint32[4];
+            fixed(sint32 *i = ia) {
+                emu_glGetUniformiv (program, location, i);
+            }
+            return ia;
+        }
+
+        public static sint32    glGetUniformLocation       (uint32 program, string name) {
+            fixed(char* c = name) {
+                return emu_glGetUniformLocation (program, c);
+            }
+        }
+
+        public static float     glGetVertexAttribf         (uint32 index, GLenum pname) {
+            float v;
+            emu_glGetVertexAttribfv (index, pname, &v);
+            return v;
+        }
+
+        public static sint32    glGetVertexAttribi         (uint32 index, GLenum pname) {
+            sint32 i;
+            emu_glGetVertexAttribiv (index, pname, &i);
+            return i;
+        }
+
+        public static IntPtr    glGetVertexAttribPointerv  (uint32 index, GLenum pname) {
+            IntPtr ip;
+            emu_glGetVertexAttribPointerv (index, pname, (void**)&ip);
+            return ip;
+        }
+
+        public static void      glHint                 (GLenum target, GLenum mode) {
+            emu_glHint (target, mode);
+        }
+
+        public static bool      glIsBuffer             (uint32 buffer) {
+            return GLenum.GL_FALSE != (GLenum)emu_glIsBuffer(buffer);
+        }
+
+        public static bool      glIsEnabled            (GLenum cap) {
+            return GLenum.GL_FALSE != (GLenum)emu_glIsEnabled (cap);
+        }
+
+        public static bool      glIsFramebuffer        (uint32 framebuffer) {
+            return GLenum.GL_FALSE != (GLenum) emu_glIsFramebuffer (framebuffer);
+        }
+
+        public static bool      glIsProgram            (uint32 program) {
+            return GLenum.GL_FALSE != (GLenum)emu_glIsProgram (program);
+        }
+
+        public static bool      glIsRenderbuffer       (uint32 renderbuffer) {
+            return GLenum.GL_FALSE != (GLenum)emu_glIsRenderbuffer (renderbuffer);
+        }
+
+        public static bool      glIsShader             (uint32 shader) {
+            return GLenum.GL_FALSE != (GLenum)emu_glIsShader (shader);
+        }
+
+        public static bool      glIsTexture            (uint32 texture) {
+            return GLenum.GL_FALSE != (GLenum)emu_glIsTexture (texture);
+        }
+
+        public static void      glLineWidth            (float width) {
+            emu_glLineWidth (width);
+        }
+
+        public static void      glLinkProgram          (uint32 program) {
+            emu_glLinkProgram (program);
+        }
+
+        public static void      glPixelStorei          (GLenum pname, sint32 param) {
+            emu_glPixelStorei (pname, param);
+        }
+
+        public static void      glPolygonOffset        (float factor, float units) {
+            emu_glPolygonOffset (factor, units);
+        }
+
+        public static void      glReadPixels           (sint32 x, sint32 y, uint32 width, uint32 height, GLenum format, GLenum type, IntPtr pixels) {
+            emu_glReadPixels (x, y, width, height, format, type, (void*)pixels);
+        }
+
+        public static void      glReleaseShaderCompiler() {
+            emu_glReleaseShaderCompiler ();
+        }
+
+        public static void      glRenderbufferStorage  (GLenum target, GLenum internalformat, uint32 width, uint32 height) {
+            emu_glRenderbufferStorage (target, internalformat, width, height);
+        }
+
+        public static void      glSampleCoverage       (float value, bool invert) {
+            emu_glSampleCoverage (value, (GLboolean)(invert ? GLenum.GL_TRUE : GLenum.GL_FALSE));
+        }
+
+        public static void      glScissor              (sint32 x, sint32 y, uint32 width, uint32 height) {
+            emu_glScissor (x, y, width, height);
+        }
+
+        public static void      glShaderBinary         (uint32[] shaders, GLenum binaryformat, IntPtr binary, uint32 length) {
+            var count = (uint32)shaders.Length;
+            fixed(uint32* s = shaders) {
+                emu_glShaderBinary (count, s, binaryformat, (void*)binary, length);
+            }
+        }
+
+        public static void      glShaderSource         (uint32 shader, string[] shaders) {
+            var lengths = new sint32[shaders.Length];
+            var shaders_ = new char*[shaders.Length];
+
+            for (var i = 0; i < shaders.Length; ++i) {
+                lengths [i] = shaders [i].Length;
+                fixed(char* s = shaders[i].ToCharArray()) {
+                    shaders_ [i] = s;
+                }
+            }
+
+            fixed(char** shaders__ = shaders_) {
+                fixed(sint32* lengths_ = lengths) {
+                    emu_glShaderSource (shader, (uint32)shaders.Length, shaders__, lengths_);
+                }
+            }
+        }
+
+        public static void      glStencilFunc          (GLenum func, sint32 ref_, uint32 mask) {
+            emu_glStencilFunc (func, ref_, mask);
+        }
+
+        public static void      glStencilFuncSeparate  (GLenum face, GLenum func, sint32 ref_, uint32 mask) {
+            emu_glStencilFuncSeparate (face, func, ref_, mask);
+        }
+
+        public static void      glStencilMask          (uint32 mask) {
+            emu_glStencilMask (mask);
+        }
+
+        public static void      glStencilMaskSeparate  (GLenum face, uint32 mask) {
+            emu_glStencilMaskSeparate (face, mask);
+        }
+
+        public static void      glStencilOp            (GLenum fail, GLenum zfail, GLenum zpass) {
+            emu_glStencilOp (fail, zfail, zpass);
+        }
+
+        public static void      glStencilOpSeparate    (GLenum face, GLenum sfail, GLenum dpfail, GLenum dppass) {
+            emu_glStencilOpSeparate (face, sfail, dpfail, dppass);
+        }
+
+        public static void      glTexImage2D           (GLenum target, sint32 level, sint32 internalformat, uint32 width, uint32 height, sint32 border, GLenum format, GLenum type, IntPtr pixels) {
+            emu_glTexImage2D (target, level, internalformat, width, height, border, format, type, (void*)pixels);
+        }
+
+        public static void      glTexParameterf        (GLenum target, GLenum pname, float param) {
+            emu_glTexParameterf (target, pname, param);
+        }
+
+        public static void      glTexParameterf        (GLenum target, GLenum pname, float[] parms) {
+            fixed(float* p = parms) {
+                emu_glGetTexParameterfv (target, pname, p);
+            }
+        }
+
+        public static void      glTexParameteri        (GLenum target, GLenum pname, sint32 param) {
+            emu_glTexParameteri (target, pname, param);
+        }
+
+        public static void      glTexParameteri        (GLenum target, GLenum pname, sint32[] parms) {
+            fixed(sint32* p = parms) {
+                emu_glTexParameteriv (target, pname, p);
+            }
+        }
+
+
+        public static void      glTexSubImage2D        (GLenum target, sint32 level, sint32 xoffset, sint32 yoffset, uint32 width, uint32 height, GLenum format, GLenum type, IntPtr pixels) {
+            emu_glTexSubImage2D (target, level, xoffset, yoffset, width, height, format, type, (void*)pixels);
+        }
+
+        public static void      glUniform1f            (sint32 location, float v0) {
+            emu_glUniform1f (location, v0);
+        }
+
+        public static void      glUniform1f            (sint32 location, float[] values) {
+            var count = (uint32)values.Length;
+            fixed(float* vals = values) {
+                emu_glUniform1fv (location, count, vals);
+            }
+        }
+
+        public static void      glUniform1i            (sint32 location, sint32 v0) {
+            emu_glUniform1i (location, v0);
+        }
+
+        public static void      glUniform1i            (sint32 location, sint32[] values) {
+            var count = (uint32)values.Length;
+            fixed(sint32* vals = values) {
+                emu_glUniform1iv (location, count, vals);
+            }
+        }
+
+        public static void      glUniform2f            (sint32 location, float v0, float v1) {
+            emu_glUniform2f (location, v0, v1);
+        }
+
+        public static void      glUniform2f            (sint32 location, float[] values) {
+            var count = (uint32)values.Length;
+            fixed(float* vals = values) {
+                emu_glUniform2fv (location, count, vals);
+            }
+        }
+
+        public static void      glUniform2i            (sint32 location, sint32 v0, sint32 v1) {
+            emu_glUniform2i (location, v0, v1);
+        }
+
+        public static void      glUniform2i            (sint32 location, sint32[] values) {
+            var count = (uint32)values.Length;
+            fixed(sint32* vals = values) {
+                emu_glUniform2iv (location, count, vals);
+            }
+        }
+
+        public static void      glUniform3f            (sint32 location, float v0, float v1, float v2) {
+            emu_glUniform3f (location, v0, v1, v2);
+        }
+
+        public static void      glUniform3f            (sint32 location, float[] values) {
+            var count = (uint32)values.Length;
+            fixed(float* vals = values) {
+                emu_glUniform3fv (location, count, vals);
+            }
+        }
+
+        public static void      glUniform3i            (sint32 location, sint32 v0, sint32 v1, sint32 v2) {
+            emu_glUniform3i (location, v0, v1, v2);
+        }
+
+        public static void      glUniform3i            (sint32 location, sint32[] values) {
+            var count = (uint32)values.Length;
+            fixed(sint32* vals = values) {
+                emu_glUniform3iv (location, count, vals);
+            }
+        }
+
+        public static void      glUniform4f            (sint32 location, float v0, float v1, float v2, float v4) {
+            emu_glUniform4f (location, v0, v1, v2, v4);
+        }
+
+        public static void      glUniform4f            (sint32 location, float[] values) {
+            var count = (uint32)values.Length;
+            fixed(float* vals = values) {
+                emu_glUniform4fv (location, count, vals);
+            }
+        }
+
+        public static void      glUniform4i            (sint32 location, sint32 v0, sint32 v1, sint32 v2, sint32 v3) {
+            emu_glUniform4i (location, v0, v1, v2, v3);
+        }
+
+        public static void      glUniform4i            (sint32 location, sint32[] values) {
+            var count = (uint32)values.Length;
+            fixed(sint32* vals = values) {
+                emu_glUniform4iv (location, count, vals);
+            }
+        }
+
+        public static void      glUniformMatrix2fv     (sint32 location, uint32 count, GLboolean transpose, const float *value);                                                                           
+//        public static void      glUniformMatrix3fv     (sint32 location, uint32 count, GLboolean transpose, const float *value);                                                                           
+//        public static void      glUniformMatrix4fv     (sint32 location, uint32 count, GLboolean transpose, const float *value);                                                                           
+//        public static void      glUseProgram           (uint32 program);                                                                                                                                   
+//        public static void      glValidateProgram      (uint32 program);                                                                                                                                   
+//        public static void      glVertexAttrib1f       (uint32 index, float x);                                                                                                                            
+//        public static void      glVertexAttrib1fv      (uint32 index, const float *v);                                                                                                                     
+//        public static void      glVertexAttrib2f       (uint32 index, float x, float y);                                                                                                                   
+//        public static void      glVertexAttrib2fv      (uint32 index, const float *v);                                                                                                                     
+//        public static void      glVertexAttrib3f       (uint32 index, float x, float y, float z);                                                                                                          
+//        public static void      glVertexAttrib3fv      (uint32 index, const float *v);                                                                                                                     
+//        public static void      glVertexAttrib4f       (uint32 index, float x, float y, float z, float w);                                                                                                 
+//        public static void      glVertexAttrib4fv      (uint32 index, const float *v);                                                                                                                     
+//        public static void      glVertexAttribPointer  (uint32 index, sint32 size, GL_ENUM type, GLboolean normalized, uint32 stride, const void *pointer);                                                
+//        public static void      glViewport             (sint32 x, sint32 y, uint32 width, uint32 height);                                                                                                  
 //
         const string DllName = @"native.dll";
         const int MaxStrLength = 256;
