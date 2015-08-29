@@ -493,15 +493,8 @@ namespace Render
 
         private const string DllName = @"native.dll";
 
-        [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
+        //[DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
         //[return: MarshalAs(UnmanagedType.Bool)]
-        private static extern void emu_glActiveTexture(GLenum texture);
-
-        [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void emu_glAttachShader(uint32 program, uint32 shader);
-
-        [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern void emu_glBindAttribLocation(uint32 program, uint32 index, char* name);
 
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
         private static extern void      emu_glActiveTexture        (GLenum texture);                                                                                                                                  
