@@ -19,6 +19,18 @@ open Render
 
 [<EntryPoint>]
 let main argv = 
-    
+
+    printfn "init: %d" (Glfw3.init())
+    printfn "version: %A" (Glfw3.getVersion())
+    printfn "str version: %s" (Glfw3.getVersionString())
+    printfn "monitors: %d" (Glfw3.getMonitors().Length)
+
+    let primaryMonitor = Glfw3.getPrimaryMonitor()
+
+    printfn "primary monitor position: %A" (Glfw3.getMonitorPos(primaryMonitor))
+
+    Glfw3.getMonitors()
+    |> Array.iter (fun m -> printfn "Pos: %A\nSize: %A" (Glfw3.getMonitorPos m) (Glfw3.getMonitorPhysicalSize m))
+
     printfn "%A" argv
     0 // return an integer exit code
