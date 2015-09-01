@@ -182,7 +182,7 @@ type Error =
     | PLATFORM_ERROR         = 0x00010008
     | FORMAT_UNAVAILABLE     = 0x00010009
 
-type WindowFlags =
+type WindowHint =
     | FOCUSED                = 0x00020001
     | ICONIFIED              = 0x00020002
     | RESIZABLE              = 0x00020003
@@ -282,7 +282,7 @@ type MonitorFun         = delegate of Monitor * int                 -> unit
 #nowarn "9"
 
 [<StructAttribute; StructLayoutAttribute(LayoutKind.Sequential)>]
-type VidMode =
+type VideoMode =
     val     width       : int
     val     height      : int
     val     redBits     : int
@@ -291,17 +291,18 @@ type VidMode =
     val     refreshRate : int
 
 [<StructAttribute; StructLayoutAttribute(LayoutKind.Sequential)>]
-type GammaRamp =
-    val     red         : nativeptr<uint16>
-    val     green       : nativeptr<uint16>
-    val     blue        : nativeptr<uint16>
-    val     size        : uint16
-
-[<StructAttribute; StructLayoutAttribute(LayoutKind.Sequential)>]
 type Image =
     val     width       : int
     val     height      : int
     val     pixels      : nativeptr<byte>
+
+[<StructAttribute; StructLayoutAttribute(LayoutKind.Sequential)>]
+type GammaRamp =
+    val     Red         : int[]
+    val     Green       : int[]
+    val     Blue        : int[]
+
+    new(r, g, b) = { Red = r; Green = g; Blue = b }
 
 [<AutoOpen>]
 module private Native =
@@ -311,6 +312,7 @@ module private Native =
     type GLFWmonitor    = IntPtr
     type GLFWwindow     = IntPtr
     type GLFWcursor     = IntPtr
+
     type GLFWglproc             = delegate of unit                          -> unit
     type GLFWerrorfun           = delegate of int * [<MarshalAs(UnmanagedType.LPStr)>] error: string -> unit
     type GLFWwindowposfun       = delegate of GLFWwindow * int * int        -> unit
@@ -331,6 +333,13 @@ module private Native =
     type GLFWmonitorfun         = delegate of GLFWmonitor * int             -> unit
 
 
+    [<StructAttribute; StructLayoutAttribute(LayoutKind.Sequential)>]
+    type GLFWgammaramp =
+        val     red         : IntPtr
+        val     green       : IntPtr
+        val     blue        : IntPtr
+        val     size        : uint16
+
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
     extern int glfwInit()
 
@@ -344,10 +353,6 @@ module private Native =
     extern IntPtr glfwGetVersionString()
 
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
-    extern GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun cbfun)
-
-    //extern GLFWmonitor** glfwGetMonitors(int* count);
-    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
     extern IntPtr glfwGetMonitors([<Out>]int& count)
 
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
@@ -359,16 +364,38 @@ module private Native =
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
     extern void glfwGetMonitorPhysicalSize(GLFWmonitor monitor, [<Out>]int& widthMM, [<Out>]int& heightMM)
 
-//    extern const char* glfwGetMonitorName(GLFWmonitor* monitor);
-//    extern GLFWmonitorfun glfwSetMonitorCallback(GLFWmonitorfun cbfun);
-//    extern const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* monitor, int* count);
-//    extern const GLFWvidmode* glfwGetVideoMode(GLFWmonitor* monitor);
-//    extern void glfwSetGamma(GLFWmonitor* monitor, float gamma);
-//    extern const GLFWgammaramp* glfwGetGammaRamp(GLFWmonitor* monitor);
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern IntPtr glfwGetMonitorName(GLFWmonitor monitor)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun cbfun)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern GLFWmonitorfun glfwSetMonitorCallback(GLFWmonitorfun cbfun)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern IntPtr glfwGetVideoModes(GLFWmonitor monitor, [<Out>] int& count)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern IntPtr glfwGetVideoMode(GLFWmonitor monitor)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern void glfwSetGamma(GLFWmonitor monitor, float32 gamma)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern IntPtr glfwGetGammaRamp(GLFWmonitor monitor)
+
 //    extern void glfwSetGammaRamp(GLFWmonitor* monitor, const GLFWgammaramp* ramp);
-//    extern void glfwDefaultWindowHints(void);
-//    extern void glfwWindowHint(int target, int hint);
-//    extern GLFWwindow* glfwCreateWindow(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share);
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern void glfwDefaultWindowHints()
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern void glfwWindowHint(int target, int hint)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern GLFWwindow glfwCreateWindow(int width, int height, [<MarshalAs(UnmanagedType.LPStr)>]string title, GLFWmonitor monitor, GLFWwindow share);
+
 //    extern void glfwDestroyWindow(GLFWwindow* window);
 //    extern int glfwWindowShouldClose(GLFWwindow* window);
 //    extern void glfwSetWindowShouldClose(GLFWwindow* window, int value);
@@ -462,3 +489,44 @@ let getMonitorPhysicalSize (m: Monitor) =
     let mutable w, h = 0, 0
     glfwGetMonitorPhysicalSize(m.Value, &w, &h)
     w, h
+
+let getMonitorName (m: Monitor) = Marshal.PtrToStringAnsi(glfwGetMonitorName m.Value)
+
+let getVideoModes (m: Monitor) =
+    let mutable count = 0
+    let ret = glfwGetVideoModes(m.Value, &count)
+    let vidModes = Array.init count (fun i -> VideoMode())
+
+    let modeSize = Marshal.SizeOf(typeof<VideoMode>)
+
+    for i in 0..count - 1 do
+        vidModes.[i] <- unbox<VideoMode>(Marshal.PtrToStructure(IntPtr.Add(ret, i * modeSize), typeof<VideoMode>))
+
+    vidModes
+
+let getVideoMode (m: Monitor) =
+    let ret =  glfwGetVideoMode m.Value
+    unbox<VideoMode>(Marshal.PtrToStructure(ret, typeof<VideoMode>))
+
+let setGamma(m: Monitor, g: float32) = glfwSetGamma(m.Value, g)
+
+
+let getGammaramp (m: Monitor) =
+    let ramp = unbox<GLFWgammaramp>(Marshal.PtrToStructure(glfwGetGammaRamp(m.Value), typeof<GLFWgammaramp>))
+    let redArr = Array.init (int ramp.size) (fun _ -> 0s)
+    Marshal.Copy(ramp.red, redArr, 0, int ramp.size)
+    let greenArr = Array.init (int ramp.size) (fun _ -> 0s)
+    Marshal.Copy(ramp.green, greenArr, 0, int ramp.size)
+    let blueArr = Array.init (int ramp.size) (fun _ -> 0s)
+    Marshal.Copy(ramp.blue, blueArr, 0, int ramp.size)
+
+    let s2i x = if x < 0s then 65535 - int x else int x
+    GammaRamp(redArr   |> Array.map s2i,
+              greenArr |> Array.map s2i,
+              blueArr  |> Array.map s2i)
+
+let defaultWindowHint () = glfwDefaultWindowHints ()
+
+let windowHint(wh: WindowHint, v: int) = glfwWindowHint(wh |> int, v)
+
+

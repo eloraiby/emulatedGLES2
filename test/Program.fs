@@ -23,14 +23,33 @@ let main argv =
     printfn "init: %d" (Glfw3.init())
     printfn "version: %A" (Glfw3.getVersion())
     printfn "str version: %s" (Glfw3.getVersionString())
-    printfn "monitors: %d" (Glfw3.getMonitors().Length)
+
+    let monitors = Glfw3.getMonitors()
+    printfn "monitors: %d" (monitors.Length)
 
     let primaryMonitor = Glfw3.getPrimaryMonitor()
 
     printfn "primary monitor position: %A" (Glfw3.getMonitorPos(primaryMonitor))
 
-    Glfw3.getMonitors()
-    |> Array.iter (fun m -> printfn "Pos: %A\nSize: %A" (Glfw3.getMonitorPos m) (Glfw3.getMonitorPhysicalSize m))
+    monitors
+    |> Array.iter (fun m -> printfn "Name: %s, Pos: %A, Size: %A" (Glfw3.getMonitorName m) (Glfw3.getMonitorPos m) (Glfw3.getMonitorPhysicalSize m))
 
-    printfn "%A" argv
+    monitors
+    |> Array.iteri
+        (fun im m ->
+            m
+            |> Glfw3.getVideoModes
+            |> Array.iteri
+                (fun iv vm ->
+                    printfn "%dx%d - width:  %d - height: %d - RGB:    %d%d%d - rate:   %d" im iv vm.width vm.height vm.redBits vm.greenBits vm.blueBits vm.refreshRate))
+
+    let vm = Glfw3.getVideoMode primaryMonitor
+    printfn "Primary: width:  %d - height: %d - RGB:    %d%d%d - rate:   %d" vm.width vm.height vm.redBits vm.greenBits vm.blueBits vm.refreshRate    
+
+    //Glfw3.setGamma(primaryMonitor, 1.0f)
+
+    let gammaRamp = Glfw3.getGammaramp(primaryMonitor)
+
+    gammaRamp.Red |> Array.iter(fun r -> printfn "r: %d" r)
+
     0 // return an integer exit code
