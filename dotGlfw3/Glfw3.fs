@@ -254,9 +254,8 @@ type GLProc = delegate of unit -> unit
 type Monitor(ptr: IntPtr) =
     member x.Value = ptr
 
-type Window(ptr: IntPtr, ob: obj) =
+type Window(ptr: IntPtr) =
     member x.Value = ptr
-    member x.Object = ob
 
 type Cursor(ptr: IntPtr) =
     member x.Value = ptr
@@ -396,12 +395,24 @@ module private Native =
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
     extern GLFWwindow glfwCreateWindow(int width, int height, [<MarshalAs(UnmanagedType.LPStr)>]string title, GLFWmonitor monitor, GLFWwindow share);
 
-//    extern void glfwDestroyWindow(GLFWwindow* window);
-//    extern int glfwWindowShouldClose(GLFWwindow* window);
-//    extern void glfwSetWindowShouldClose(GLFWwindow* window, int value);
-//    extern void glfwSetWindowTitle(GLFWwindow* window, const char* title);
-//    extern void glfwGetWindowPos(GLFWwindow* window, int* xpos, int* ypos);
-//    extern void glfwSetWindowPos(GLFWwindow* window, int xpos, int ypos);
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern void glfwDestroyWindow(GLFWwindow window)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern int glfwWindowShouldClose(GLFWwindow window)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern void glfwSetWindowShouldClose(GLFWwindow window, int value)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern void glfwSetWindowTitle(GLFWwindow window, [<MarshalAs(UnmanagedType.LPStr)>]string title)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern void glfwGetWindowPos(GLFWwindow window, [<Out>] int& xpos, [<Out>] int& ypos)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern void glfwSetWindowPos(GLFWwindow window, int xpos, int ypos)
+
 //    extern void glfwGetWindowSize(GLFWwindow* window, int* width, int* height);
 //    extern void glfwSetWindowSize(GLFWwindow* window, int width, int height);
 //    extern void glfwGetFramebufferSize(GLFWwindow* window, int* width, int* height);
@@ -421,7 +432,9 @@ module private Native =
 //    extern GLFWwindowfocusfun glfwSetWindowFocusCallback(GLFWwindow* window, GLFWwindowfocusfun cbfun);
 //    extern GLFWwindowiconifyfun glfwSetWindowIconifyCallback(GLFWwindow* window, GLFWwindowiconifyfun cbfun);
 //    extern GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* window, GLFWframebuffersizefun cbfun);
-//    extern void glfwPollEvents(void);
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern void glfwPollEvents()
 //    extern void glfwWaitEvents(void);
 //    extern void glfwPostEmptyEvent(void);
 //    extern int glfwGetInputMode(GLFWwindow* window, int mode);
@@ -529,4 +542,32 @@ let defaultWindowHint () = glfwDefaultWindowHints ()
 
 let windowHint(wh: WindowHint, v: int) = glfwWindowHint(wh |> int, v)
 
+let createWindow(width, height, title, monitor: Monitor option, share: Window option) =
+    let share =
+        match share with
+        | Some s -> s.Value
+        | None   -> IntPtr.Zero
 
+    let monitor =
+        match monitor with
+        | Some m -> m.Value
+        | None -> IntPtr.Zero
+
+    Window(glfwCreateWindow(width, height, title, monitor, share))
+
+let destroyWindow (win: Window) = glfwDestroyWindow win.Value
+
+let windowShouldClose (win: Window) = glfwWindowShouldClose(win.Value) <> 0
+
+let setWindowShouldClose (win: Window, b: bool) = glfwSetWindowShouldClose(win.Value, if b then 1 else 0)
+
+let setWindowTitle (win: Window, title: string) = glfwSetWindowTitle(win.Value, title)
+
+let getWindowPos (win: Window) =
+    let mutable x, y = 0, 0
+    glfwGetWindowPos(win.Value, &x, &y)
+    (x, y)
+
+let setWindowPos (win: Window, x: int, y: int) = glfwSetWindowPos(win.Value, x, y)
+
+let pollEvents () = glfwPollEvents()

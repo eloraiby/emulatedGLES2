@@ -52,4 +52,14 @@ let main argv =
 
     gammaRamp.Red |> Array.iter(fun r -> printfn "r: %d" r)
 
+    let win = Glfw3.createWindow(640, 480, "Hello World", None, None)
+
+    Glfw3.setWindowTitle(win, "Hahaha")
+    Glfw3.setWindowPos(win, 100, 120)
+
+    for i in 0..100 do
+        Glfw3.pollEvents ()
+
+    printfn "Pos: %A" (Glfw3.getWindowPos win)
+
     0 // return an integer exit code
