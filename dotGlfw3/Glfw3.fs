@@ -425,11 +425,21 @@ module private Native =
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
     extern void glfwGetWindowFrameSize(GLFWwindow window, [<Out>] int& left, [<Out>] int& top, [<Out>] int& right, [<Out>] int& bottom)
 
-//    extern void glfwIconifyWindow(GLFWwindow* window);
-//    extern void glfwRestoreWindow(GLFWwindow* window);
-//    extern void glfwShowWindow(GLFWwindow* window);
-//    extern void glfwHideWindow(GLFWwindow* window);
-//    extern GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern void glfwIconifyWindow(GLFWwindow window)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern void glfwRestoreWindow(GLFWwindow window)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern void glfwShowWindow(GLFWwindow window)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern void glfwHideWindow(GLFWwindow window)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern GLFWmonitor glfwGetWindowMonitor(GLFWwindow window)
+
 //    extern int glfwGetWindowAttrib(GLFWwindow* window, int attrib);
 //    extern void glfwSetWindowUserPointer(GLFWwindow* window, void* pointer);
 //    extern void* glfwGetWindowUserPointer(GLFWwindow* window);
@@ -477,9 +487,16 @@ module private Native =
 //    extern const char* glfwGetClipboardString(GLFWwindow* window);
 //    extern double glfwGetTime(void);
 //    extern void glfwSetTime(double time);
-//    extern void glfwMakeContextCurrent(GLFWwindow* window);
-//    extern GLFWwindow* glfwGetCurrentContext(void);
-//    extern void glfwSwapBuffers(GLFWwindow* window);
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern void glfwMakeContextCurrent(GLFWwindow window)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern GLFWwindow glfwGetCurrentContext()
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern void glfwSwapBuffers(GLFWwindow window)
+
 //    extern void glfwSwapInterval(int interval);
 //    extern int glfwExtensionSupported(const char* extension);
 //    extern GLFWglproc glfwGetProcAddress(const char* procname);
@@ -536,7 +553,6 @@ let getVideoMode (m: Monitor) =
     unbox<VideoMode>(Marshal.PtrToStructure(ret, typeof<VideoMode>))
 
 let setGamma(m: Monitor, g: float32) = glfwSetGamma(m.Value, g)
-
 
 let getGammaramp (m: Monitor) =
     let ramp = unbox<GLFWgammaramp>(Marshal.PtrToStructure(glfwGetGammaRamp(m.Value), typeof<GLFWgammaramp>))
@@ -601,6 +617,16 @@ let getWindowFrameSize(win: Window) =
     glfwGetWindowFrameSize(win.Value, &left, &top, &right, &bottom)
     (left, top, right, bottom)
 
+let iconifyWindow (win: Window) = glfwIconifyWindow win.Value
+
+let restoreWindow (win: Window) = glfwRestoreWindow win.Value
+
+let showWindow (win: Window) = glfwShowWindow win.Value
+
+let hideWindow (win: Window) = glfwHideWindow win.Value
+
+let getWindowMonitor (win: Window) = Monitor(glfwGetWindowMonitor win.Value)
+
 let pollEvents () = glfwPollEvents ()
 let waitEvents () = glfwWaitEvents ()
 
@@ -614,3 +640,9 @@ let setWindowShouldCloseEvent (win: Window, cb: Window -> bool) =
 
     let cb = GLFWwindowclosefun (glfwCB)
     glfwSetWindowCloseCallback (win.Value, cb) |> ignore
+
+let makeContextCurrent (win: Window) = glfwMakeContextCurrent win.Value
+
+let getCurrentContext () = Window(glfwGetCurrentContext ())
+
+let swapBuffers (win: Window) = glfwSwapBuffers win.Value

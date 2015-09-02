@@ -61,6 +61,11 @@ let main argv =
     printfn "Framebuffer %A" (Glfw3.getFrameBufferSize win)
     printfn "Window Frame size %A" (Glfw3.getWindowFrameSize win)
 
+    Glfw3.iconifyWindow win
+    Glfw3.restoreWindow win
+    Glfw3.hideWindow win
+    Glfw3.showWindow win
+
     let rec loop () =
         if Glfw3.windowShouldClose win
         then ()
