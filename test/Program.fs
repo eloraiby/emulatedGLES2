@@ -56,10 +56,20 @@ let main argv =
 
     Glfw3.setWindowTitle(win, "Hahaha")
     Glfw3.setWindowPos(win, 100, 120)
+    Glfw3.setWindowSize(win, 512, 512)
 
-    for i in 0..100 do
-        Glfw3.pollEvents ()
+    printfn "Framebuffer %A" (Glfw3.getFrameBufferSize win)
+    printfn "Window Frame size %A" (Glfw3.getWindowFrameSize win)
 
-    printfn "Pos: %A" (Glfw3.getWindowPos win)
+    let rec loop () =
+        if Glfw3.windowShouldClose win
+        then ()
+        else
+            Glfw3.pollEvents ()
+            loop ()
+
+    loop ()
+    printfn "Pos : %A" (Glfw3.getWindowPos win)
+    printfn "Size: %A" (Glfw3.getWindowSize win)
 
     0 // return an integer exit code
