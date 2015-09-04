@@ -443,7 +443,6 @@ module private Native =
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
     extern int glfwGetWindowAttrib(GLFWwindow window, int attrib)
 
-
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
     extern void glfwSetWindowUserPointer(GLFWwindow window, IntPtr pointer)
 
@@ -462,9 +461,14 @@ module private Native =
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
     extern GLFWwindowrefreshfun glfwSetWindowRefreshCallback(GLFWwindow window, GLFWwindowrefreshfun cbfun)
 
-//    extern GLFWwindowfocusfun glfwSetWindowFocusCallback(GLFWwindow* window, GLFWwindowfocusfun cbfun);
-//    extern GLFWwindowiconifyfun glfwSetWindowIconifyCallback(GLFWwindow* window, GLFWwindowiconifyfun cbfun);
-//    extern GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* window, GLFWframebuffersizefun cbfun);
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern GLFWwindowfocusfun glfwSetWindowFocusCallback(GLFWwindow window, GLFWwindowfocusfun cbfun)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern GLFWwindowiconifyfun glfwSetWindowIconifyCallback(GLFWwindow window, GLFWwindowiconifyfun cbfun)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow window, GLFWframebuffersizefun cbfun)
 
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
     extern void glfwPollEvents()
@@ -509,7 +513,9 @@ module private Native =
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
     extern void glfwSwapBuffers(GLFWwindow window)
 
-//    extern void glfwSwapInterval(int interval);
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern void glfwSwapInterval(int interval)
+
 //    extern int glfwExtensionSupported(const char* extension);
 //    extern GLFWglproc glfwGetProcAddress(const char* procname);
 
@@ -663,7 +669,19 @@ let setWindowSizeCallback (win: Window, cb: Window * int * int -> unit) =
 
 let setWindowPosCallback (win: Window, cb: Window * int * int -> unit) =
     let glfwCB(win: GLFWwindow) x y = cb (Window win, x, y)
-    glfwSetWindowPosCallback(win.Value, GLFWwindowposfun glfwCB) |> ignore
+    glfwSetWindowPosCallback (win.Value, GLFWwindowposfun glfwCB) |> ignore
+
+let setWindowFocusCallback (win: Window, cb: Window * bool -> unit) =
+    let glfwCB (win: GLFWwindow) b = cb (Window win, b <> 0)
+    glfwSetWindowFocusCallback (win.Value, GLFWwindowfocusfun glfwCB) |> ignore
+
+let setWindowIconifyCallback (win: Window, cb: Window * bool -> unit) =
+    let glfwCB (win: GLFWwindow) b = cb (Window win, b <> 0)
+    glfwSetWindowIconifyCallback (win.Value, GLFWwindowiconifyfun glfwCB) |> ignore
+
+let setFramebufferSizeCallback (win: Window, cb: Window * int * int -> unit) =
+    let glfwCB(win: GLFWwindow) width height = cb (Window win, width, height)
+    glfwSetFramebufferSizeCallback (win.Value, GLFWframebuffersizefun glfwCB) |> ignore
 
 let getWindowHit (win: Window, hint: WindowHint) = glfwGetWindowAttrib(win.Value, hint |> int)
 
@@ -676,3 +694,14 @@ let makeContextCurrent (win: Window) = glfwMakeContextCurrent win.Value
 let getCurrentContext () = Window(glfwGetCurrentContext ())
 
 let swapBuffers (win: Window) = glfwSwapBuffers win.Value
+
+let swapInterval = glfwSwapInterval
+
+let setWindowData<'T> (win: Window, data: 'T) =
+    let handle = GCHandle.Alloc(data, GCHandleType.Pinned)
+    glfwSetWindowUserPointer(win.Value, handle.AddrOfPinnedObject())
+
+let releaseWindowData (win: Window) =
+    let ptr = glfwGetWindowUserPointer (win.Value)
+    let handle = GCHandle.FromIntPtr ptr
+    handle.Free()

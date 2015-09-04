@@ -74,8 +74,11 @@ let main argv =
         Glfw3.swapBuffers win
 
     Glfw3.setWindowRefreshCallback(win, windowRefresh)
-    Glfw3.setWindowSizeCallback(win, fun (win, w, h) -> printfn "w: %d, h: %d" w h)
-    Glfw3.setWindowPosCallback(win, fun (win, x, y) -> printfn "x: %d, y: %d" x y)
+    Glfw3.setWindowSizeCallback (win, fun (win, w, h) -> printfn "w: %d, h: %d" w h)
+    Glfw3.setWindowPosCallback  (win, fun (win, x, y) -> printfn "x: %d, y: %d" x y)
+    Glfw3.setWindowFocusCallback(win, fun (win, b) -> if b then printfn "focused" else printfn "unfocused")
+    Glfw3.setWindowIconifyCallback (win, fun (win, b) -> if b then printfn "iconified" else printfn "uniconified")
+    Glfw3.setFramebufferSizeCallback (win, fun (win, w, h) -> printfn "FB: w: %d, h: %d" w h)
 
     let rec loop () =
         if Glfw3.windowShouldClose win
