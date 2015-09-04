@@ -476,7 +476,9 @@ module private Native =
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
     extern void glfwWaitEvents()
 
-//    extern void glfwPostEmptyEvent(void);
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern void glfwPostEmptyEvent()
+
 //    extern int glfwGetInputMode(GLFWwindow* window, int mode);
 //    extern void glfwSetInputMode(GLFWwindow* window, int mode, int value);
 //    extern int glfwGetKey(GLFWwindow* window, int key);
@@ -501,8 +503,12 @@ module private Native =
 //    extern const char* glfwGetJoystickName(int joy);
 //    extern void glfwSetClipboardString(GLFWwindow* window, const char* string);
 //    extern const char* glfwGetClipboardString(GLFWwindow* window);
-//    extern double glfwGetTime(void);
-//    extern void glfwSetTime(double time);
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern double glfwGetTime()
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern void glfwSetTime(double time)
 
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
     extern void glfwMakeContextCurrent(GLFWwindow window)
@@ -688,6 +694,12 @@ let getWindowHit (win: Window, hint: WindowHint) = glfwGetWindowAttrib(win.Value
 let setWindowUserPointer (win: Window, ptr: IntPtr) = glfwSetWindowUserPointer (win.Value, ptr)
 
 let getWindowUserPointer (win: Window) = glfwGetWindowUserPointer (win.Value)
+
+let postEmptyEvent = glfwPostEmptyEvent
+
+let getTime = glfwGetTime
+
+let setTime = glfwSetTime
 
 let makeContextCurrent (win: Window) = glfwMakeContextCurrent win.Value
 
