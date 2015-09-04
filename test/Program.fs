@@ -66,10 +66,22 @@ let main argv =
     Glfw3.hideWindow win
     Glfw3.showWindow win
 
+    let rnd = System.Random ()
+
+    let windowRefresh win =
+        printfn "refresh: %d" (rnd.Next())
+        GLES2.glClear ((GLenum.GL_COLOR_BUFFER_BIT ||| GLenum.GL_DEPTH_BUFFER_BIT) |> uint32)
+        Glfw3.swapBuffers win
+
+    Glfw3.setWindowRefreshCallback(win, windowRefresh)
+    Glfw3.setWindowSizeCallback(win, fun (win, w, h) -> printfn "w: %d, h: %d" w h)
+    Glfw3.setWindowPosCallback(win, fun (win, x, y) -> printfn "x: %d, y: %d" x y)
+
     let rec loop () =
         if Glfw3.windowShouldClose win
         then ()
         else
+
             Glfw3.pollEvents ()
             loop ()
 

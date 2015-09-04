@@ -440,16 +440,28 @@ module private Native =
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
     extern GLFWmonitor glfwGetWindowMonitor(GLFWwindow window)
 
-//    extern int glfwGetWindowAttrib(GLFWwindow* window, int attrib);
-//    extern void glfwSetWindowUserPointer(GLFWwindow* window, void* pointer);
-//    extern void* glfwGetWindowUserPointer(GLFWwindow* window);
-//    extern GLFWwindowposfun glfwSetWindowPosCallback(GLFWwindow* window, GLFWwindowposfun cbfun);
-//    extern GLFWwindowsizefun glfwSetWindowSizeCallback(GLFWwindow* window, GLFWwindowsizefun cbfun);
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern int glfwGetWindowAttrib(GLFWwindow window, int attrib)
+
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern void glfwSetWindowUserPointer(GLFWwindow window, IntPtr pointer)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern IntPtr glfwGetWindowUserPointer(GLFWwindow window)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern GLFWwindowposfun glfwSetWindowPosCallback(GLFWwindow window, GLFWwindowposfun cbfun);
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern GLFWwindowsizefun glfwSetWindowSizeCallback(GLFWwindow window, GLFWwindowsizefun cbfun)
 
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
     extern GLFWwindowclosefun glfwSetWindowCloseCallback(GLFWwindow window, GLFWwindowclosefun cbfun)
 
-//    extern GLFWwindowrefreshfun glfwSetWindowRefreshCallback(GLFWwindow* window, GLFWwindowrefreshfun cbfun);
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern GLFWwindowrefreshfun glfwSetWindowRefreshCallback(GLFWwindow window, GLFWwindowrefreshfun cbfun)
+
 //    extern GLFWwindowfocusfun glfwSetWindowFocusCallback(GLFWwindow* window, GLFWwindowfocusfun cbfun);
 //    extern GLFWwindowiconifyfun glfwSetWindowIconifyCallback(GLFWwindow* window, GLFWwindowiconifyfun cbfun);
 //    extern GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* window, GLFWframebuffersizefun cbfun);
@@ -630,7 +642,7 @@ let getWindowMonitor (win: Window) = Monitor(glfwGetWindowMonitor win.Value)
 let pollEvents () = glfwPollEvents ()
 let waitEvents () = glfwWaitEvents ()
 
-let setWindowShouldCloseEvent (win: Window, cb: Window -> bool) =
+let setWindowShouldCloseCallback (win: Window, cb: Window -> bool) =
     let glfwCB (win: GLFWwindow) =
         let shouldClose =
             if cb (Window(win))
@@ -640,6 +652,24 @@ let setWindowShouldCloseEvent (win: Window, cb: Window -> bool) =
 
     let cb = GLFWwindowclosefun (glfwCB)
     glfwSetWindowCloseCallback (win.Value, cb) |> ignore
+
+let setWindowRefreshCallback (win: Window, cb: Window -> unit) =
+    let glfwCB(win: GLFWwindow) = cb (Window win)
+    glfwSetWindowRefreshCallback(win.Value, GLFWwindowrefreshfun glfwCB) |> ignore
+
+let setWindowSizeCallback (win: Window, cb: Window * int * int -> unit) =
+    let glfwCB(win: GLFWwindow) width height = cb (Window win, width, height)
+    glfwSetWindowSizeCallback(win.Value, GLFWwindowsizefun glfwCB) |> ignore
+
+let setWindowPosCallback (win: Window, cb: Window * int * int -> unit) =
+    let glfwCB(win: GLFWwindow) x y = cb (Window win, x, y)
+    glfwSetWindowPosCallback(win.Value, GLFWwindowposfun glfwCB) |> ignore
+
+let getWindowHit (win: Window, hint: WindowHint) = glfwGetWindowAttrib(win.Value, hint |> int)
+
+let setWindowUserPointer (win: Window, ptr: IntPtr) = glfwSetWindowUserPointer (win.Value, ptr)
+
+let getWindowUserPointer (win: Window) = glfwGetWindowUserPointer (win.Value)
 
 let makeContextCurrent (win: Window) = glfwMakeContextCurrent win.Value
 

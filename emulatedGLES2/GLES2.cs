@@ -1120,7 +1120,7 @@ namespace Render
             emu_glViewport (x, y, width, height);
         }
 
-        const string DllName = @"native.dll";
+        const string DllName = @"emulatedGLES2";
         const int MaxStrLength = 256;
         const int MaxAttachedShaders = 64;
         const int MaxLogSize = 65536;
