@@ -247,19 +247,21 @@ type WindowHint =
     | OPENGL_CORE_PROFILE    = 0x00032001
     | OPENGL_COMPAT_PROFILE  = 0x00032002
 
-    | CURSOR                 = 0x00033001
-    | STICKY_KEYS            = 0x00033002
-    | STICKY_MOUSE_BUTTONS   = 0x00033003
-
-    | CURSOR_NORMAL          = 0x00034001
-    | CURSOR_HIDDEN          = 0x00034002
-    | CURSOR_DISABLED        = 0x00034003
-
     | ANY_RELEASE_BEHAVIOR   =          0
     | RELEASE_BEHAVIOR_FLUSH = 0x00035001
     | RELEASE_BEHAVIOR_NONE  = 0x00035002
 
-type Arrow =
+type InputMode =
+    | CURSOR                 = 0x00033001
+    | STICKY_KEYS            = 0x00033002
+    | STICKY_MOUSE_BUTTONS   = 0x00033003
+
+type CursorMode =
+    | CURSOR_NORMAL          = 0x00034001
+    | CURSOR_HIDDEN          = 0x00034002
+    | CURSOR_DISABLED        = 0x00034003
+
+type DefaultCursor =
     | ARROW_CURSOR           = 0x00036001
     | IBEAM_CURSOR           = 0x00036002
     | CROSSHAIR_CURSOR       = 0x00036003
@@ -275,26 +277,14 @@ type Monitor(ptr: IntPtr) =
 type Window(ptr: IntPtr) =
     member x.Value = ptr
 
+    override x.Equals (o: obj) =
+        let o = unbox<Window> o
+        o.Value = ptr
+
+    override x.GetHashCode () = ptr.GetHashCode()
+
 type Cursor(ptr: IntPtr) =
     member x.Value = ptr
-
-type ErrorFun           = delegate of int * string                  -> unit
-type WindowPosFun       = delegate of Window * int * int            -> unit
-type WindowSizeFun      = delegate of Window * int * int            -> unit
-type WindowCloseFun     = delegate of Window                        -> unit
-type WindowRefreshFun   = delegate of Window                        -> unit
-type WindowFocusFun     = delegate of Window * int                  -> unit
-type WindowIconifyFun   = delegate of Window * int                  -> unit
-type FramebufferSizeFun = delegate of Window * int * int            -> unit
-type MouseButtonFun     = delegate of Window * int * int * int      -> unit
-type CursorPosFun       = delegate of Window * double * double      -> unit
-type CursorEnterFun     = delegate of Window * int                  -> unit
-type ScrollFun          = delegate of Window * double * double      -> unit
-type KeyFun             = delegate of Window * int * int * int * int -> unit
-type CharFun            = delegate of Window * char                 -> unit
-type CharModsFun        = delegate of Window * char * int           -> unit
-type DropFun            = delegate of Window * string[]             -> unit
-type MonitorFun         = delegate of Monitor * int                 -> unit
 
 #nowarn "9"
 
@@ -324,7 +314,6 @@ type GammaRamp =
 [<AutoOpen>]
 module private Native =
     let [<LiteralAttribute>] GLFW_DLL = @"glfw"
-
 
     type GLFWmonitor    = IntPtr
     type GLFWwindow     = IntPtr
@@ -497,19 +486,34 @@ module private Native =
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
     extern void glfwPostEmptyEvent()
 
-//    extern int glfwGetInputMode(GLFWwindow* window, int mode);
-//    extern void glfwSetInputMode(GLFWwindow* window, int mode, int value);
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern int glfwGetInputMode(GLFWwindow window, int mode)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern void glfwSetInputMode(GLFWwindow window, int mode, int value)
 
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
     extern int glfwGetKey(GLFWwindow window, int key)
 
-//    extern int glfwGetMouseButton(GLFWwindow* window, int button);
-//    extern void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
-//    extern void glfwSetCursorPos(GLFWwindow* window, double xpos, double ypos);
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern int glfwGetMouseButton(GLFWwindow window, int button)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern void glfwGetCursorPos(GLFWwindow window, [<Out>] double& xpos, [<Out>] double& ypos)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern void glfwSetCursorPos(GLFWwindow window, double xpos, double ypos)
+
 //    extern GLFWcursor* glfwCreateCursor(const GLFWimage* image, int xhot, int yhot);
-//    extern GLFWcursor* glfwCreateStandardCursor(int shape);
-//    extern void glfwDestroyCursor(GLFWcursor* cursor);
-//    extern void glfwSetCursor(GLFWwindow* window, GLFWcursor* cursor);
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern GLFWcursor glfwCreateStandardCursor(int shape)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern void glfwDestroyCursor(GLFWcursor cursor)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern void glfwSetCursor(GLFWwindow window, GLFWcursor cursor)
 
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
     extern GLFWkeyfun glfwSetKeyCallback(GLFWwindow window, GLFWkeyfun cbfun)
@@ -540,7 +544,9 @@ module private Native =
 //    extern const unsigned char* glfwGetJoystickButtons(int joy, int* count);
 //    extern const char* glfwGetJoystickName(int joy);
 //    extern void glfwSetClipboardString(GLFWwindow* window, const char* string);
-//    extern const char* glfwGetClipboardString(GLFWwindow* window);
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern IntPtr glfwGetClipboardString(GLFWwindow window)
 
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
     extern double glfwGetTime()
@@ -755,7 +761,6 @@ let setScrollCallback (win: Window, cb: Window * float * float -> unit) =
     let glfwCB (win: GLFWwindow) x y = cb (Window win, x, y)
     glfwSetScrollCallback(win.Value, GLFWscrollfun glfwCB) |> ignore
 
-
 let setDropCallback (win: Window, cb: Window * string[] -> unit) =
     let glfwCB (win: GLFWwindow) (count: int) (s : IntPtr) =
         let strArr = Array.init count (fun i -> IntPtr.Zero)
@@ -769,6 +774,11 @@ let setDropCallback (win: Window, cb: Window * string[] -> unit) =
 
     glfwSetDropCallback(win.Value, GLFWdropfun glfwCB) |> ignore
 
+let getClipboardString (win: Window) =
+    let ptr = glfwGetClipboardString win.Value
+    if ptr = IntPtr.Zero
+    then ""
+    else Marshal.PtrToStringAnsi ptr
 
 let getWindowHit (win: Window, hint: WindowHint) = glfwGetWindowAttrib(win.Value, hint |> int)
 
@@ -783,6 +793,33 @@ let getTime = glfwGetTime
 let setTime = glfwSetTime
 
 let getKey (win: Window, k: Key) = glfwGetKey(win.Value, k |> int) |> enum<Action>
+
+let setCursorMode (win: Window, cm: CursorMode) = glfwSetInputMode(win.Value, InputMode.CURSOR |> int, cm |> int)
+
+let getCursorMode (win: Window) = glfwGetInputMode(win.Value, InputMode.CURSOR |> int) |> enum<CursorMode>
+
+let getCursorPos (win: Window) =
+    let mutable x, y = 0.0, 0.0
+    glfwGetCursorPos(win.Value, &x, &y)
+    (x, y)
+
+let setCursorPos (win: Window, x, y) = glfwSetCursorPos(win.Value, x, y)
+
+let createStandardCursor(shape: DefaultCursor) =  Cursor(glfwCreateStandardCursor (shape |> int))
+
+let destroyCursor(cursor: Cursor) = glfwDestroyCursor cursor.Value
+
+let setCursor (win: Window, cursor: Cursor) = glfwSetCursor(win.Value, cursor.Value)
+
+let setStickyKeyMode (win: Window, b: bool) = glfwSetInputMode (win.Value, InputMode.STICKY_KEYS |> int, if b then 1 else 0)
+
+let getStickyKeyMode (win: Window) = glfwGetInputMode (win.Value, InputMode.STICKY_KEYS |> int) <> 0
+
+let setStickyMouseButtonMode (win: Window, b: bool) = glfwSetInputMode (win.Value, InputMode.STICKY_MOUSE_BUTTONS |> int, if b then 1 else 0)
+
+let getStickyMouseButtonMode (win: Window) = glfwGetInputMode (win.Value, InputMode.STICKY_MOUSE_BUTTONS |> int) <> 0
+
+let getMouseButton(win: Window, button: MouseButton) = glfwGetMouseButton(win.Value, button |> int) |> enum<Action>
 
 let makeContextCurrent (win: Window) = glfwMakeContextCurrent win.Value
 
