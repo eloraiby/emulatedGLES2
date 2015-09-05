@@ -133,6 +133,7 @@ type Key =
     | KEY_LAST               = 348
 
 type Mod =
+    | MOD_NONE               = 0x0000
     | MOD_SHIFT              = 0x0001
     | MOD_CONTROL            = 0x0002
     | MOD_ALT                = 0x0004
@@ -481,7 +482,10 @@ module private Native =
 
 //    extern int glfwGetInputMode(GLFWwindow* window, int mode);
 //    extern void glfwSetInputMode(GLFWwindow* window, int mode, int value);
-//    extern int glfwGetKey(GLFWwindow* window, int key);
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern int glfwGetKey(GLFWwindow window, int key)
+
 //    extern int glfwGetMouseButton(GLFWwindow* window, int button);
 //    extern void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
 //    extern void glfwSetCursorPos(GLFWwindow* window, double xpos, double ypos);
@@ -489,9 +493,16 @@ module private Native =
 //    extern GLFWcursor* glfwCreateStandardCursor(int shape);
 //    extern void glfwDestroyCursor(GLFWcursor* cursor);
 //    extern void glfwSetCursor(GLFWwindow* window, GLFWcursor* cursor);
-//    extern GLFWkeyfun glfwSetKeyCallback(GLFWwindow* window, GLFWkeyfun cbfun);
-//    extern GLFWcharfun glfwSetCharCallback(GLFWwindow* window, GLFWcharfun cbfun);
-//    extern GLFWcharmodsfun glfwSetCharModsCallback(GLFWwindow* window, GLFWcharmodsfun cbfun);
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern GLFWkeyfun glfwSetKeyCallback(GLFWwindow window, GLFWkeyfun cbfun)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern GLFWcharfun glfwSetCharCallback(GLFWwindow window, GLFWcharfun cbfun)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern GLFWcharmodsfun glfwSetCharModsCallback(GLFWwindow window, GLFWcharmodsfun cbfun)
+
 //    extern GLFWmousebuttonfun glfwSetMouseButtonCallback(GLFWwindow* window, GLFWmousebuttonfun cbfun);
 //    extern GLFWcursorposfun glfwSetCursorPosCallback(GLFWwindow* window, GLFWcursorposfun cbfun);
 //    extern GLFWcursorenterfun glfwSetCursorEnterCallback(GLFWwindow* window, GLFWcursorenterfun cbfun);
@@ -689,6 +700,18 @@ let setFramebufferSizeCallback (win: Window, cb: Window * int * int -> unit) =
     let glfwCB(win: GLFWwindow) width height = cb (Window win, width, height)
     glfwSetFramebufferSizeCallback (win.Value, GLFWframebuffersizefun glfwCB) |> ignore
 
+let setKeyCallback (win: Window, cb: Window * Key * int * Action * Mod -> unit) =
+    let glfwCB(win: GLFWwindow) k s a m = cb (Window win, k |> enum<Key>, s, a |> enum<Action>, m |> enum<Mod>)
+    glfwSetKeyCallback (win.Value, GLFWkeyfun glfwCB) |> ignore
+
+let setCharCallback (win: Window, cb: Window * char -> unit) =
+    let glfwCB(win: GLFWwindow) (c: uint32) = cb (Window win, System.Convert.ToChar c)
+    glfwSetCharCallback (win.Value, GLFWcharfun glfwCB) |> ignore
+
+let setCharModsCallback (win: Window, cb: Window * char * Mod -> unit) =
+    let glfwCB(win: GLFWwindow) (c: uint32) m = cb (Window win, System.Convert.ToChar c, m |> enum<Mod>)
+    glfwSetCharModsCallback (win.Value, GLFWcharmodsfun glfwCB) |> ignore
+
 let getWindowHit (win: Window, hint: WindowHint) = glfwGetWindowAttrib(win.Value, hint |> int)
 
 let setWindowUserPointer (win: Window, ptr: IntPtr) = glfwSetWindowUserPointer (win.Value, ptr)
@@ -700,6 +723,8 @@ let postEmptyEvent = glfwPostEmptyEvent
 let getTime = glfwGetTime
 
 let setTime = glfwSetTime
+
+let getKey (win: Window, k: Key) = glfwGetKey(win.Value, k |> int) |> enum<Action>
 
 let makeContextCurrent (win: Window) = glfwMakeContextCurrent win.Value
 

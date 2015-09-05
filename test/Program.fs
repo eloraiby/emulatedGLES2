@@ -79,6 +79,9 @@ let main argv =
     Glfw3.setWindowFocusCallback(win, fun (win, b) -> if b then printfn "focused" else printfn "unfocused")
     Glfw3.setWindowIconifyCallback (win, fun (win, b) -> if b then printfn "iconified" else printfn "uniconified")
     Glfw3.setFramebufferSizeCallback (win, fun (win, w, h) -> printfn "FB: w: %d, h: %d" w h)
+    Glfw3.setKeyCallback(win, fun (w, k, i, a, m) -> printfn "%A - %d - %A - %A" k i a m)
+    Glfw3.setCharCallback(win, fun (w, c) -> printfn "%c" c)
+    Glfw3.setCharModsCallback(win, fun (w, c, m) -> printfn "%c - %A" c m)
 
     let rec loop () =
         if Glfw3.windowShouldClose win
