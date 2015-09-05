@@ -1,4 +1,21 @@
-﻿module Glfw3
+﻿(*
+** .Net GLFW3
+** Copyright (C) 2015  Wael El Oraiby
+** 
+** This program is free software: you can redistribute it and/or modify
+** it under the terms of the GNU Affero General Public License as
+** published by the Free Software Foundation, either version 3 of the
+** License, or (at your option) any later version.
+** 
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU Affero General Public License for more details.
+** 
+** You should have received a copy of the GNU Affero General Public License
+** along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*)
+module Glfw3
 
 open System
 open System.Runtime.InteropServices
@@ -503,10 +520,18 @@ module private Native =
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
     extern GLFWcharmodsfun glfwSetCharModsCallback(GLFWwindow window, GLFWcharmodsfun cbfun)
 
-//    extern GLFWmousebuttonfun glfwSetMouseButtonCallback(GLFWwindow* window, GLFWmousebuttonfun cbfun);
-//    extern GLFWcursorposfun glfwSetCursorPosCallback(GLFWwindow* window, GLFWcursorposfun cbfun);
-//    extern GLFWcursorenterfun glfwSetCursorEnterCallback(GLFWwindow* window, GLFWcursorenterfun cbfun);
-//    extern GLFWscrollfun glfwSetScrollCallback(GLFWwindow* window, GLFWscrollfun cbfun);
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern GLFWmousebuttonfun glfwSetMouseButtonCallback(GLFWwindow window, GLFWmousebuttonfun cbfun)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern GLFWcursorposfun glfwSetCursorPosCallback(GLFWwindow window, GLFWcursorposfun cbfun)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern GLFWcursorenterfun glfwSetCursorEnterCallback(GLFWwindow window, GLFWcursorenterfun cbfun)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern GLFWscrollfun glfwSetScrollCallback(GLFWwindow window, GLFWscrollfun cbfun)
+
 //    extern GLFWdropfun glfwSetDropCallback(GLFWwindow* window, GLFWdropfun cbfun);
 //    extern int glfwJoystickPresent(int joy);
 //    extern const float* glfwGetJoystickAxes(int joy, int* count);
@@ -711,6 +736,23 @@ let setCharCallback (win: Window, cb: Window * char -> unit) =
 let setCharModsCallback (win: Window, cb: Window * char * Mod -> unit) =
     let glfwCB(win: GLFWwindow) (c: uint32) m = cb (Window win, System.Convert.ToChar c, m |> enum<Mod>)
     glfwSetCharModsCallback (win.Value, GLFWcharmodsfun glfwCB) |> ignore
+
+let setMouseButtonCallback (win: Window, cb: Window * MouseButton * Action * Mod -> unit) =
+    let glfwCB (win: GLFWwindow) x y z = cb (Window win, x |> enum<MouseButton>, y |> enum<Action>, z |> enum<Mod>)
+    glfwSetMouseButtonCallback(win.Value, GLFWmousebuttonfun glfwCB) |> ignore
+
+let setCursorPosCallback (win: Window, cb: Window * float * float -> unit) =
+    let glfwCB (win: GLFWwindow) x y = cb (Window win, x, y)
+    glfwSetCursorPosCallback(win.Value, GLFWcursorposfun glfwCB) |> ignore
+
+let setCursorEnterCallback (win: Window, cb: Window * bool -> unit) =
+    let glfwCB (win: GLFWwindow) b = cb (Window win, b <> 0)
+    glfwSetCursorEnterCallback(win.Value, GLFWcursorenterfun glfwCB) |> ignore
+
+let setScrollCallback (win: Window, cb: Window * float * float -> unit) =
+    let glfwCB (win: GLFWwindow) x y = cb (Window win, x, y)
+    glfwSetScrollCallback(win.Value, GLFWscrollfun glfwCB) |> ignore
+
 
 let getWindowHit (win: Window, hint: WindowHint) = glfwGetWindowAttrib(win.Value, hint |> int)
 
