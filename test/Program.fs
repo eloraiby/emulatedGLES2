@@ -83,9 +83,10 @@ let main argv =
     Glfw3.setCharCallback(win, fun (w, c) -> printfn "%c" c)
     Glfw3.setCharModsCallback(win, fun (w, c, m) -> printfn "%c - %A" c m)
     Glfw3.setMouseButtonCallback(win, fun (w, b, a, m) -> printfn "mouse %A, %A, %A" b a m)
-    Glfw3.setCursorPosCallback(win, fun (w, x, y) -> printfn "pos: %f, %f" x y)
+//    Glfw3.setCursorPosCallback(win, fun (w, x, y) -> printfn "pos: %f, %f" x y)
     Glfw3.setCursorEnterCallback(win, fun (w, b) -> printfn "Enter: %b" b)
     Glfw3.setScrollCallback(win, fun (w, x, y) -> printfn "Scroll: %f %f" x y)
+    Glfw3.setDropCallback(win, fun (w, s) -> printfn "%A" s)
 
     let rec loop () =
         if Glfw3.windowShouldClose win

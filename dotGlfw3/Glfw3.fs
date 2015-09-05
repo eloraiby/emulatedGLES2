@@ -532,7 +532,9 @@ module private Native =
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
     extern GLFWscrollfun glfwSetScrollCallback(GLFWwindow window, GLFWscrollfun cbfun)
 
-//    extern GLFWdropfun glfwSetDropCallback(GLFWwindow* window, GLFWdropfun cbfun);
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern GLFWdropfun glfwSetDropCallback(GLFWwindow window, GLFWdropfun cbfun)
+
 //    extern int glfwJoystickPresent(int joy);
 //    extern const float* glfwGetJoystickAxes(int joy, int* count);
 //    extern const unsigned char* glfwGetJoystickButtons(int joy, int* count);
@@ -752,6 +754,20 @@ let setCursorEnterCallback (win: Window, cb: Window * bool -> unit) =
 let setScrollCallback (win: Window, cb: Window * float * float -> unit) =
     let glfwCB (win: GLFWwindow) x y = cb (Window win, x, y)
     glfwSetScrollCallback(win.Value, GLFWscrollfun glfwCB) |> ignore
+
+
+let setDropCallback (win: Window, cb: Window * string[] -> unit) =
+    let glfwCB (win: GLFWwindow) (count: int) (s : IntPtr) =
+        let strArr = Array.init count (fun i -> IntPtr.Zero)
+        Marshal.Copy(s, strArr, 0, count)
+
+        let strArr =
+            strArr
+            |> Array.map Marshal.PtrToStringAnsi
+
+        cb (Window win, strArr)
+
+    glfwSetDropCallback(win.Value, GLFWdropfun glfwCB) |> ignore
 
 
 let getWindowHit (win: Window, hint: WindowHint) = glfwGetWindowAttrib(win.Value, hint |> int)
