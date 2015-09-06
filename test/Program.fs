@@ -48,9 +48,13 @@ let main argv =
 
     //Glfw3.setGamma(primaryMonitor, 1.0f)
 
-    let gammaRamp = Glfw3.getGammaramp(primaryMonitor)
+    let gammaRamp0 = Glfw3.getGammaramp primaryMonitor
+    Glfw3.setGammaramp(primaryMonitor, gammaRamp0)
+    let gammaRamp1 = Glfw3.getGammaramp primaryMonitor
 
-    gammaRamp.Red |> Array.iter(fun r -> printfn "r: %d" r)
+    gammaRamp0.Red
+    |> Array.zip gammaRamp1.Red
+    |> Array.iter(fun (r0, r1) -> printfn "r0: %d - r1: %d" r0 r1)
 
     let win = Glfw3.createWindow(640, 480, "Hello World", None, None)
 

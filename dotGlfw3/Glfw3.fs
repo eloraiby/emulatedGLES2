@@ -251,11 +251,6 @@ type WindowHint =
     | RELEASE_BEHAVIOR_FLUSH = 0x00035001
     | RELEASE_BEHAVIOR_NONE  = 0x00035002
 
-type InputMode =
-    | CURSOR                 = 0x00033001
-    | STICKY_KEYS            = 0x00033002
-    | STICKY_MOUSE_BUTTONS   = 0x00033003
-
 type CursorMode =
     | CURSOR_NORMAL          = 0x00034001
     | CURSOR_HIDDEN          = 0x00034002
@@ -315,6 +310,12 @@ type GammaRamp =
 module private Native =
     let [<LiteralAttribute>] GLFW_DLL = @"glfw"
 
+    type InputMode =
+        | CURSOR                 = 0x00033001
+        | STICKY_KEYS            = 0x00033002
+        | STICKY_MOUSE_BUTTONS   = 0x00033003
+
+
     type GLFWmonitor    = IntPtr
     type GLFWwindow     = IntPtr
     type GLFWcursor     = IntPtr
@@ -345,6 +346,8 @@ module private Native =
         val     green       : IntPtr
         val     blue        : IntPtr
         val     size        : uint16
+
+        new(r, g, b, s) = { red = r; green = g; blue = b; size = s }
 
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
     extern int glfwInit()
@@ -391,7 +394,8 @@ module private Native =
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
     extern IntPtr glfwGetGammaRamp(GLFWmonitor monitor)
 
-//    extern void glfwSetGammaRamp(GLFWmonitor* monitor, const GLFWgammaramp* ramp);
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern void glfwSetGammaRamp(GLFWmonitor monitor, [<MarshalAs(UnmanagedType.LPStruct)>] GLFWgammaramp ramp);
 
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
     extern void glfwDefaultWindowHints()
@@ -539,11 +543,19 @@ module private Native =
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
     extern GLFWdropfun glfwSetDropCallback(GLFWwindow window, GLFWdropfun cbfun)
 
-//    extern int glfwJoystickPresent(int joy);
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern int glfwJoystickPresent(int joy)
+
 //    extern const float* glfwGetJoystickAxes(int joy, int* count);
-//    extern const unsigned char* glfwGetJoystickButtons(int joy, int* count);
-//    extern const char* glfwGetJoystickName(int joy);
-//    extern void glfwSetClipboardString(GLFWwindow* window, const char* string);
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern IntPtr glfwGetJoystickButtons(int joy, [<Out>] int& count)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern IntPtr glfwGetJoystickName(int joy)
+
+    [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
+    extern void glfwSetClipboardString(GLFWwindow window, [<MarshalAs(UnmanagedType.LPStr)>] string str);
 
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
     extern IntPtr glfwGetClipboardString(GLFWwindow window)
@@ -631,10 +643,28 @@ let getGammaramp (m: Monitor) =
     let blueArr = Array.init (int ramp.size) (fun _ -> 0s)
     Marshal.Copy(ramp.blue, blueArr, 0, int ramp.size)
 
-    let s2i x = if x < 0s then 65535 - int x else int x
+    let s2i x = if x < 0s then (uint16 x) |> int else int x
+
     GammaRamp(redArr   |> Array.map s2i,
               greenArr |> Array.map s2i,
               blueArr  |> Array.map s2i)
+
+let setGammaramp (m: Monitor, gr: GammaRamp) =
+    let red   = gr.Red   |> Array.map uint16
+    let blue  = gr.Blue  |> Array.map uint16
+    let green = gr.Green |> Array.map uint16
+    let rh = GCHandle.Alloc (red  , GCHandleType.Pinned)
+    let gh = GCHandle.Alloc (green, GCHandleType.Pinned)
+    let bh = GCHandle.Alloc (blue , GCHandleType.Pinned)
+
+    let ramp = GLFWgammaramp(rh.AddrOfPinnedObject(), gh.AddrOfPinnedObject(), bh.AddrOfPinnedObject(), red.Length |> uint16)
+
+    glfwSetGammaRamp(m.Value, ramp)
+
+    bh.Free()
+    gh.Free()
+    rh.Free()
+
 
 let defaultWindowHint () = glfwDefaultWindowHints ()
 
@@ -780,6 +810,8 @@ let getClipboardString (win: Window) =
     then ""
     else Marshal.PtrToStringAnsi ptr
 
+let setClipboardString (win: Window, str) = glfwSetClipboardString (win.Value, str)
+
 let getWindowHit (win: Window, hint: WindowHint) = glfwGetWindowAttrib(win.Value, hint |> int)
 
 let setWindowUserPointer (win: Window, ptr: IntPtr) = glfwSetWindowUserPointer (win.Value, ptr)
@@ -820,6 +852,19 @@ let setStickyMouseButtonMode (win: Window, b: bool) = glfwSetInputMode (win.Valu
 let getStickyMouseButtonMode (win: Window) = glfwGetInputMode (win.Value, InputMode.STICKY_MOUSE_BUTTONS |> int) <> 0
 
 let getMouseButton(win: Window, button: MouseButton) = glfwGetMouseButton(win.Value, button |> int) |> enum<Action>
+
+let isJoystickPresent(joy: Joystick) = glfwJoystickPresent (joy |> int) <> 0
+
+let getJoystickButtons (joy: Joystick) =
+    let mutable count = 0
+    let ptr = glfwGetJoystickButtons(joy |> int, &count)
+
+    let chArr = Array.init count (fun i -> byte 0)
+    Marshal.Copy (ptr, chArr, 0, count)
+
+    chArr |> Array.map (fun c -> int c |> enum<Action>)
+
+let getJoystickName (joy: Joystick) = Marshal.PtrToStringAnsi (glfwGetJoystickName (joy |> int))
 
 let makeContextCurrent (win: Window) = glfwMakeContextCurrent win.Value
 
