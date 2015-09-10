@@ -54,9 +54,9 @@
       <Name>emulatedGLES2</Name>
       <Project>{40D74AD2-EEF4-47F3-864D-4877E8EC132D}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\dotGlfw3\dotGlfw3.fsproj">
+    <ProjectReference Include="..\dotGlfw3\FsGlfw3.fsproj">
       <Project>{F108E0FF-7CB0-482D-9BF5-A2513D31266D}</Project>
-      <Name>dotGlfw3</Name>
+      <Name>FsGlfw3</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
