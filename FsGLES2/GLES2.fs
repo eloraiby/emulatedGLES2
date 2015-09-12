@@ -17,6 +17,8 @@
 *)
 module GLES2
 
+#nowarn "9"
+
 open System
 open System.Runtime.InteropServices
 
@@ -429,22 +431,22 @@ module private Native =
     extern unit emu_glCullFace(GLenum mode)
     
     [<DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)>]
-    extern unit emu_glDeleteBuffers(int32 n, int32 * buffers)
+    extern unit emu_glDeleteBuffers(int32 n, [<MarshalAs(UnmanagedType.LPArray)>] int32[] buffers)
     
     [<DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)>]
-    extern unit emu_glDeleteFramebuffers(int32 n, int32 * framebuffers)
+    extern unit emu_glDeleteFramebuffers(int32 n, [<MarshalAs(UnmanagedType.LPArray)>] int32[] framebuffers)
     
     [<DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)>]
     extern unit emu_glDeleteProgram(int32 program)
     
     [<DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)>]
-    extern unit emu_glDeleteRenderbuffers(int32 n, int32 * renderbuffers)
+    extern unit emu_glDeleteRenderbuffers(int32 n, [<MarshalAs(UnmanagedType.LPArray)>] int32[] renderbuffers)
     
     [<DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)>]
     extern unit emu_glDeleteShader(int32 shader)
     
     [<DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)>]
-    extern unit emu_glDeleteTextures(int32 n, int32 * textures)
+    extern unit emu_glDeleteTextures(int32 n, [<MarshalAs(UnmanagedType.LPArray)>] int32[] textures)
     
     [<DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)>]
     extern unit emu_glDepthFunc(GLenum func)
@@ -467,8 +469,11 @@ module private Native =
     [<DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)>]
     extern unit emu_glDrawArrays(GLenum mode, int32 first, int32 count)
     
-    [<DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)>]
-    extern unit emu_glDrawElements(GLenum mode, int32 count, GLenum type_, void * indices)
+    [<DllImport(DllName, EntryPoint = "emu_glDrawElements", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)>]
+    extern unit emu_glDrawElementsU16(GLenum mode, int32 count, GLenum type_, [<MarshalAs(UnmanagedType.LPArray)>] uint16[] indices)
+
+    [<DllImport(DllName, EntryPoint = "emu_glDrawElements", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)>]
+    extern unit emu_glDrawElementsU32(GLenum mode, int32 count, GLenum type_, [<MarshalAs(UnmanagedType.LPArray)>] uint32[] indices)
     
     [<DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)>]
     extern unit emu_glEnable(GLenum cap)
@@ -492,19 +497,19 @@ module private Native =
     extern unit emu_glFrontFace(GLenum mode)
     
     [<DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)>]
-    extern unit emu_glGenBuffers(int32 n, int32 * buffers)
+    extern unit emu_glGenBuffers(int32 n, [<MarshalAs(UnmanagedType.LPArray)>] int32[] buffers)
     
     [<DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)>]
     extern unit emu_glGenerateMipmap(GLenum target)
     
     [<DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)>]
-    extern unit emu_glGenFramebuffers(int32 n, int32 * framebuffers)
+    extern unit emu_glGenFramebuffers(int32 n, [<MarshalAs(UnmanagedType.LPArray)>] int32[] framebuffers)
     
     [<DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)>]
-    extern unit emu_glGenRenderbuffers(int32 n, int32 * renderbuffers)
+    extern unit emu_glGenRenderbuffers(int32 n, [<MarshalAs(UnmanagedType.LPArray)>] int32[] renderbuffers)
     
     [<DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)>]
-    extern unit emu_glGenTextures(int32 n, int32 * textures)
+    extern unit emu_glGenTextures(int32 n, [<MarshalAs(UnmanagedType.LPArray)>] int32[] textures)
     
     [<DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)>]
     extern unit emu_glGetActiveAttrib(int32 program, int32 index, int32 bufSize, int32 * length, int32 * size, GLenum * type_, char * name)
@@ -772,6 +777,8 @@ module private Native =
     [<DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)>]
     extern unit emu_glViewport(int32 x, int32 y, int32 width, int32 height)
 
+let b2GLb (b: bool) = if b then 1uy else 0uy
+
 let glActiveTexture         = emu_glActiveTexture
 let glAttachShader          = emu_glAttachShader
 let glBindAttribLocation    = emu_glBindAttribLocation
@@ -783,136 +790,189 @@ let glBlendColor            = emu_glBlendColor
 let glBlendEquation         = emu_glBlendEquation        
 let glBlendEquationSeparate = emu_glBlendEquationSeparate
 let glBlendFunc             = emu_glBlendFunc            
-let glBlendFuncSeparate     = emu_glBlendFuncSeparate    
-let glBufferData            = emu_glBufferData           (GLenum target, int32 size, void *data, GLenum usage)
-let glBufferSubData         = emu_glBufferSubData        (GLenum target, int32 offset, int32 size, void *data)
+let glBlendFuncSeparate     = emu_glBlendFuncSeparate   
+ 
+let glBufferData<'T when 'T : struct> (target, size, data: 'T[], usage) =
+    let gch = GCHandle.Alloc (data, GCHandleType.Pinned)
+    emu_glBufferData (target, size, gch.AddrOfPinnedObject(), usage)
+    gch.Free ()
+
+let glBufferSubData<'T when 'T : struct> (target, offset, size, data: 'T[]) =
+    let gch = GCHandle.Alloc (data, GCHandleType.Pinned)  
+    emu_glBufferSubData (target, offset, size, gch.AddrOfPinnedObject ())
+    gch.Free ()
+
+[<StructAttribute; StructLayoutAttribute(LayoutKind.Sequential)>]
+type ColorRGB<'T> =
+    val r: 'T
+    val g: 'T
+    val b: 'T
+
+    new(r, g, b) = { r = r; g = g; b = b }
+
+[<StructAttribute; StructLayoutAttribute(LayoutKind.Sequential)>]
+type ColorRGBA<'T> =
+    val r: 'T
+    val g: 'T
+    val b: 'T
+    val a: 'T
+
+    new(r, g, b, a) = { r = r; g = g; b = b; a = a}
+
 let glCheckFramebufferStatus= emu_glCheckFramebufferStatus
 let glClear                 = emu_glClear                
 let glClearColor            = emu_glClearColor           
 let glClearDepthf           = emu_glClearDepthf          
 let glClearStencil          = emu_glClearStencil         
-let glColorMask             = emu_glColorMask            (GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha)
-let glCompileShader         = emu_glCompileShader        
-let glCompressedTexImage2D  = emu_glCompressedTexImage2D (GLenum target, int32 level, GLenum internalformat, int32 width, int32 height, int32 border, int32 imageSize, void *data)
-let glCompressedTexSubImage = emu_glCompressedTexSubImage2D  (GLenum target, int32 level, int32 xoffset, int32 yoffset, int32 width, int32 height, GLenum format, int32 imageSize, void *data)
+let glColorMask (r: bool, g: bool, b: bool, a: bool) =  emu_glColorMask(r |> b2GLb, g |> b2GLb, b |> b2GLb, a |> b2GLb)
+let glCompileShader         = emu_glCompileShader
+      
+let glCompressedTexImage2D<'T when 'T : struct> (target, level, internalformat, width, height, border, imageSize, data: 'T[]) =
+    let gch = GCHandle.Alloc (data, GCHandleType.Pinned)  
+    emu_glCompressedTexImage2D (target, level, internalformat, width, height, border, imageSize, gch.AddrOfPinnedObject ())
+    gch.Free ()
+
+let glCompressedTexSubImage<'T when 'T : struct> (target, level, xoffset, yoffset, width, height, format, imageSize, data: 'T[]) =
+    let gch = GCHandle.Alloc (data, GCHandleType.Pinned)  
+    emu_glCompressedTexSubImage2D  (target, level, xoffset, yoffset, width, height, format, imageSize, gch.AddrOfPinnedObject ())
+    gch.Free ()
+
 let glCopyTexImage2D        = emu_glCopyTexImage2D      
 let glCopyTexSubImage2D     = emu_glCopyTexSubImage2D   
-let glCreateProgram         = mu_glCreateProgram        
-let glCreateShader          = mu_glCreateShader         
+let glCreateProgram         = emu_glCreateProgram        
+let glCreateShader          = emu_glCreateShader         
 let glCullFace              = emu_glCullFace             
-let glDeleteBuffers         = emu_glDeleteBuffers        (int32 n, int32 *buffers)
-let glDeleteFramebuffers    = emu_glDeleteFramebuffers   (int32 n, int32 *framebuffers)
+
+let glDeleteBuffers (buffers: int32[]) =  emu_glDeleteBuffers (buffers.Length, buffers)
+
+let glDeleteFramebuffers (framebuffers: int32[]) = emu_glDeleteFramebuffers (framebuffers.Length, framebuffers)
+
 let glDeleteProgram         = emu_glDeleteProgram        
-let glDeleteRenderbuffers   = emu_glDeleteRenderbuffers  (int32 n, int32 *renderbuffers)
+
+let glDeleteRenderbuffers (renderbuffers: int32[]) = emu_glDeleteRenderbuffers  (renderbuffers.Length, renderbuffers)
+
 let glDeleteShader          = emu_glDeleteShader         
-let glDeleteTextures        = emu_glDeleteTextures       (int32 n, int32 *textures)
+
+let glDeleteTextures (textures: int32[]) = emu_glDeleteTextures (textures.Length, textures)
+
 let glDepthFunc             = emu_glDepthFunc            
-let glDepthMask             = emu_glDepthMask            (GLboolean flag)
+
+let glDepthMask b           = emu_glDepthMask (b |> b2GLb)
+
 let glDepthRangef           = emu_glDepthRangef          
 let glDetachShader          = emu_glDetachShader         
 let glDisable               = emu_glDisable              
 let glDisableVertexAttribArray = emu_glDisableVertexAttribArray
 let glDrawArrays            = emu_glDrawArrays           
-let glDrawElements          = emu_glDrawElements         (GLenum mode, int32 count, GLenum type_, void *indices)
+
+let glDrawElementsU16 (mode, count, type_, indices: uint16[]) = emu_glDrawElementsU16 (mode, count, type_, indices)
+let glDrawElementsU32 (mode, count, type_, indices: uint32[]) = emu_glDrawElementsU32 (mode, count, type_, indices)
+
 let glEnable                = emu_glEnable               
 let glEnableVertexAttribArray = emu_glEnableVertexAttribArray
 let glFinish                = emu_glFinish               
 let glFlush                 = emu_glFlush                
 let glFramebufferRenderbuff = emu_glFramebufferRenderbuffer
 let glFramebufferTexture2D  = emu_glFramebufferTexture2D   
-let glFrontFace             = emu_glFrontFace            
-let glGenBuffers            = emu_glGenBuffers           (int32 n, int32 *buffers)
-let glGenerateMipmap        = emu_glGenerateMipmap       
-let glGenFramebuffers       = emu_glGenFramebuffers      (int32 n, int32 *framebuffers)
-let glGenRenderbuffers      = emu_glGenRenderbuffers     (int32 n, int32 *renderbuffers)
-let glGenTextures           = emu_glGenTextures          (int32 n, int32 *textures)
-let glGetActiveAttrib       = emu_glGetActiveAttrib      (int32 program, int32 index, int32 bufSize, int32 *length, int32 *size, GLenum *type_, char *name)
-let glGetActiveUniform      = emu_glGetActiveUniform     (int32 program, int32 index, int32 bufSize, int32 *length, int32 *size, GLenum *type_, char *name)
-let glGetAttachedShaders    = emu_glGetAttachedShaders   (int32 program, int32 maxCount, int32 *count, int32 *shaders)
-let glGetAttribLocation     = emu_glGetAttribLocation    
-let glGetBooleanv           = emu_glGetBooleanv          (GLenum pname, GLboolean *data)
-let glGetBufferParameteriv  = emu_glGetBufferParameteriv (GLenum target, GLenum pname, int32 *parms)
-let glGetError              = emu_glGetError             
-let glGetsinglev            = emu_glGetsinglev            (GLenum pname, single *data)
-let glGetFramebufferAttachm = emu_glGetFramebufferAttachmentParameteriv (GLenum target, GLenum attachment, GLenum pname, int32 *parms)
-let glGetIntegerv           = emu_glGetIntegerv          (GLenum pname, int32 *data)
-let glGetProgramiv          = emu_glGetProgramiv         (int32 program, GLenum pname, int32 *parms)
-let glGetProgramInfoLog     = emu_glGetProgramInfoLog    (int32 program, int32 bufSize, int32 *length, char *infoLog)
-let glGetRenderbufferParame = emu_glGetRenderbufferParameteriv   (GLenum target, GLenum pname, int32 *parms)
-let glGetShaderiv           = emu_glGetShaderiv          (int32 shader, GLenum pname, int32 *parms)
-let glGetShaderInfoLog      = emu_glGetShaderInfoLog     (int32 shader, int32 bufSize, int32 *length, char *infoLog)
-let glGetShaderPrecisionFor = emu_glGetShaderPrecisionFormat (GLenum shadertype, GLenum precisiontype, int32 *range, int32 *precision)
-let glGetShaderSource       = emu_glGetShaderSource      (int32 shader, int32 bufSize, int32 *length, char *source)
-let glGetString             = emu_glGetString            (GLenum name)
-let glGetTexParameterfv     = emu_glGetTexParameterfv    (GLenum target, GLenum pname, single *parms)
-let glGetTexParameteriv     = emu_glGetTexParameteriv    (GLenum target, GLenum pname, int32 *parms)
-let glGetUniformfv          = emu_glGetUniformfv         (int32 program, int32 location, single *parms)
-let glGetUniformiv          = emu_glGetUniformiv         (int32 program, int32 location, int32 *parms)
-let glGetUniformLocation     = emu_glGetUniformLocation   (int32 program, char *name)
-let glGetVertexAttribfv     = emu_glGetVertexAttribfv     (int32 index, GLenum pname, single *parms)
-let glGetVertexAttribiv     = emu_glGetVertexAttribiv     (int32 index, GLenum pname, int32 *parms)
-//let emu_glGetVertexAttribPointerv  (int32 index, GLenum pname, void **pointer);                                                                                                      
-let glGetVertexAttribPointerv = emu_glGetVertexAttribPointerv  (int32 index, GLenum pname, IntPtr pointer)
-let glHint                  = emu_glHint
-let glIsBuffer              = emu_glIsBuffer
-let glIsEnabled             = emu_glIsEnabled
-let glIsFramebuffer         = emu_glIsFramebuffer
-let glIsProgram             = emu_glIsProgram
-let glIsRenderbuffer        = emu_glIsRenderbuffer
-let glIsShader              = emu_glIsShader
-let glIsTexture             = emu_glIsTexture
-let glLineWidth             = emu_glLineWidth
-let glLinkProgram           = emu_glLinkProgram
-let glPixelStorei           = emu_glPixelStorei
-let glPolygonOffset         = emu_glPolygonOffset
-let glReadPixels            = emu_glReadPixels           (int32 x, int32 y, int32 width, int32 height, GLenum format, GLenum type_, void *pixels)
-let glReleaseShaderCompiler = emu_glReleaseShaderCompiler
-let glRenderbufferStorage   = emu_glRenderbufferStorage
-let glSampleCoverage        = emu_glSampleCoverage       (single value, GLboolean invert)
-let glScissor               = emu_glScissor
-let glShaderBinary          = emu_glShaderBinary         (int32 count, int32 *shaders, GLenum binaryformat, void *binary, int32 length)
-//let emu_glShaderSource        = t emu_glShaderSource         (int32 shader, int32 count, char **str, int32 *length);                                                                      
-let glShaderSource          = emu_glShaderSource         (int32 shader, int32 count, IntPtr str, int32 *length)
-let glStencilFunc           = emu_glStencilFunc
-let glStencilFuncSeparate   = emu_glStencilFuncSeparate
-let glStencilMask           = emu_glStencilMask
-let glStencilMaskSeparate   = emu_glStencilMaskSeparate
-let glStencilOp             = emu_glStencilOp
-let glStencilOpSeparate     = emu_glStencilOpSeparate
-let glTexImage2D            = emu_glTexImage2D           (GLenum target, int32 level, int32 internalformat, int32 width, int32 height, int32 border, GLenum format, GLenum type_, void *pixels)
-let glTexParameterf         = emu_glTexParameterf
-let glTexParameterfv        = emu_glTexParameterfv       (GLenum target, GLenum pname, single *parms)
-let glTexParameteri         = emu_glTexParameteri
-let glTexParameteriv        = emu_glTexParameteriv       (GLenum target, GLenum pname, int32 *parms)
-let glTexSubImage2D         = emu_glTexSubImage2D        (GLenum target, int32 level, int32 xoffset, int32 yoffset, int32 width, int32 height, GLenum format, GLenum type_, void *pixels)
-let glUniform1f             = emu_glUniform1f
-let glUniform1fv            = emu_glUniform1fv           (int32 location, int32 count, [<MarshalAs(UnmanagedType.LPArray)>] single[] value)
-let glUniform1i             = emu_glUniform1i
-let glUniform1iv            = emu_glUniform1iv           (int32 location, int32 count, [<MarshalAs(UnmanagedType.LPArray)>] int32[] value)
-let glUniform2f             = emu_glUniform2f
-let glUniform2fv            = emu_glUniform2fv           (int32 location, int32 count, [<MarshalAs(UnmanagedType.LPArray)>] single[] value)
-let glUniform2i             = emu_glUniform2i
-let glUniform2iv            = emu_glUniform2iv           (int32 location, int32 count, [<MarshalAs(UnmanagedType.LPArray)>] int32[] value)
-let glUniform3f             = emu_glUniform3f
-let glUniform3fv            = emu_glUniform3fv           (int32 location, int32 count, [<MarshalAs(UnmanagedType.LPArray)>] single[] value)
-let glUniform3i             = emu_glUniform3i
-let glUniform3iv            = emu_glUniform3iv           (int32 location, int32 count, [<MarshalAs(UnmanagedType.LPArray)>] int32[] value)
-let glUniform4f             = emu_glUniform4f
-let glUniform4fv            = emu_glUniform4fv           (int32 location, int32 count, [<MarshalAs(UnmanagedType.LPArray)>] single[] value)
-let glUniform4i             = emu_glUniform4i
-let glUniform4iv            = emu_glUniform4iv           (int32 location, int32 count, [<MarshalAs(UnmanagedType.LPArray)>] int32[] value)
-let glUniformMatrix2fv      = emu_glUniformMatrix2fv     (int32 location, int32 count, GLboolean transpose, [<MarshalAs(UnmanagedType.LPArray)>] single[] value)
-let glUniformMatrix3fv      = emu_glUniformMatrix3fv     (int32 location, int32 count, GLboolean transpose, [<MarshalAs(UnmanagedType.LPArray)>] single[] value)
-let glUniformMatrix4fv      = emu_glUniformMatrix4fv     (int32 location, int32 count, GLboolean transpose, [<MarshalAs(UnmanagedType.LPArray)>] single[] value)
-let glUseProgram            = emu_glUseProgram
-let glValidateProgram       = emu_glValidateProgram
-let glVertexAttrib1f        = emu_glVertexAttrib1f
-let glVertexAttrib1fv       = emu_glVertexAttrib1fv      (int32 index, single *v)
-let glVertexAttrib2f        = emu_glVertexAttrib2f
-let glVertexAttrib2fv       = emu_glVertexAttrib2fv      (int32 index, single *v)
-let glVertexAttrib3f        = emu_glVertexAttrib3f
-let glVertexAttrib3fv       = emu_glVertexAttrib3fv      (int32 index, single *v)
-let glVertexAttrib4f        = emu_glVertexAttrib4f
-let glVertexAttrib4fv       = emu_glVertexAttrib4fv      (int32 index, single *v)
-let glVertexAttribPointer   = emu_glVertexAttribPointer  (int32 index, int32 size, GLenum type_, GLboolean normalized, int32 stride, void *pointer)
+let glFrontFace             = emu_glFrontFace  
+          
+let glGenBuffers n          =
+    let buffers = Array.zeroCreate<int32> n
+    emu_glGenBuffers (n, buffers)
+    buffers
+
+let glGenerateMipmap        = emu_glGenerateMipmap
+
+//let glGenFramebuffers       = emu_glGenFramebuffers      (int32 n, int32 *framebuffers)
+//let glGenRenderbuffers      = emu_glGenRenderbuffers     (int32 n, int32 *renderbuffers)
+//let glGenTextures           = emu_glGenTextures          (int32 n, int32 *textures)
+//let glGetActiveAttrib       = emu_glGetActiveAttrib      (int32 program, int32 index, int32 bufSize, int32 *length, int32 *size, GLenum *type_, char *name)
+//let glGetActiveUniform      = emu_glGetActiveUniform     (int32 program, int32 index, int32 bufSize, int32 *length, int32 *size, GLenum *type_, char *name)
+//let glGetAttachedShaders    = emu_glGetAttachedShaders   (int32 program, int32 maxCount, int32 *count, int32 *shaders)
+//let glGetAttribLocation     = emu_glGetAttribLocation    
+//let glGetBooleanv           = emu_glGetBooleanv          (GLenum pname, GLboolean *data)
+//let glGetBufferParameteriv  = emu_glGetBufferParameteriv (GLenum target, GLenum pname, int32 *parms)
+//let glGetError              = emu_glGetError             
+//let glGetsinglev            = emu_glGetsinglev            (GLenum pname, single *data)
+//let glGetFramebufferAttachm = emu_glGetFramebufferAttachmentParameteriv (GLenum target, GLenum attachment, GLenum pname, int32 *parms)
+//let glGetIntegerv           = emu_glGetIntegerv          (GLenum pname, int32 *data)
+//let glGetProgramiv          = emu_glGetProgramiv         (int32 program, GLenum pname, int32 *parms)
+//let glGetProgramInfoLog     = emu_glGetProgramInfoLog    (int32 program, int32 bufSize, int32 *length, char *infoLog)
+//let glGetRenderbufferParame = emu_glGetRenderbufferParameteriv   (GLenum target, GLenum pname, int32 *parms)
+//let glGetShaderiv           = emu_glGetShaderiv          (int32 shader, GLenum pname, int32 *parms)
+//let glGetShaderInfoLog      = emu_glGetShaderInfoLog     (int32 shader, int32 bufSize, int32 *length, char *infoLog)
+//let glGetShaderPrecisionFor = emu_glGetShaderPrecisionFormat (GLenum shadertype, GLenum precisiontype, int32 *range, int32 *precision)
+//let glGetShaderSource       = emu_glGetShaderSource      (int32 shader, int32 bufSize, int32 *length, char *source)
+//let glGetString             = emu_glGetString            (GLenum name)
+//let glGetTexParameterfv     = emu_glGetTexParameterfv    (GLenum target, GLenum pname, single *parms)
+//let glGetTexParameteriv     = emu_glGetTexParameteriv    (GLenum target, GLenum pname, int32 *parms)
+//let glGetUniformfv          = emu_glGetUniformfv         (int32 program, int32 location, single *parms)
+//let glGetUniformiv          = emu_glGetUniformiv         (int32 program, int32 location, int32 *parms)
+//let glGetUniformLocation     = emu_glGetUniformLocation   (int32 program, char *name)
+//let glGetVertexAttribfv     = emu_glGetVertexAttribfv     (int32 index, GLenum pname, single *parms)
+//let glGetVertexAttribiv     = emu_glGetVertexAttribiv     (int32 index, GLenum pname, int32 *parms)
+////let emu_glGetVertexAttribPointerv  (int32 index, GLenum pname, void **pointer);                                                                                                      
+//let glGetVertexAttribPointerv = emu_glGetVertexAttribPointerv  (int32 index, GLenum pname, IntPtr pointer)
+//let glHint                  = emu_glHint
+//let glIsBuffer              = emu_glIsBuffer
+//let glIsEnabled             = emu_glIsEnabled
+//let glIsFramebuffer         = emu_glIsFramebuffer
+//let glIsProgram             = emu_glIsProgram
+//let glIsRenderbuffer        = emu_glIsRenderbuffer
+//let glIsShader              = emu_glIsShader
+//let glIsTexture             = emu_glIsTexture
+//let glLineWidth             = emu_glLineWidth
+//let glLinkProgram           = emu_glLinkProgram
+//let glPixelStorei           = emu_glPixelStorei
+//let glPolygonOffset         = emu_glPolygonOffset
+//let glReadPixels            = emu_glReadPixels           (int32 x, int32 y, int32 width, int32 height, GLenum format, GLenum type_, void *pixels)
+//let glReleaseShaderCompiler = emu_glReleaseShaderCompiler
+//let glRenderbufferStorage   = emu_glRenderbufferStorage
+//let glSampleCoverage        = emu_glSampleCoverage       (single value, GLboolean invert)
+//let glScissor               = emu_glScissor
+//let glShaderBinary          = emu_glShaderBinary         (int32 count, int32 *shaders, GLenum binaryformat, void *binary, int32 length)
+////let emu_glShaderSource        = t emu_glShaderSource         (int32 shader, int32 count, char **str, int32 *length);                                                                      
+//let glShaderSource          = emu_glShaderSource         (int32 shader, int32 count, IntPtr str, int32 *length)
+//let glStencilFunc           = emu_glStencilFunc
+//let glStencilFuncSeparate   = emu_glStencilFuncSeparate
+//let glStencilMask           = emu_glStencilMask
+//let glStencilMaskSeparate   = emu_glStencilMaskSeparate
+//let glStencilOp             = emu_glStencilOp
+//let glStencilOpSeparate     = emu_glStencilOpSeparate
+//let glTexImage2D            = emu_glTexImage2D           (GLenum target, int32 level, int32 internalformat, int32 width, int32 height, int32 border, GLenum format, GLenum type_, void *pixels)
+//let glTexParameterf         = emu_glTexParameterf
+//let glTexParameterfv        = emu_glTexParameterfv       (GLenum target, GLenum pname, single *parms)
+//let glTexParameteri         = emu_glTexParameteri
+//let glTexParameteriv        = emu_glTexParameteriv       (GLenum target, GLenum pname, int32 *parms)
+//let glTexSubImage2D         = emu_glTexSubImage2D        (GLenum target, int32 level, int32 xoffset, int32 yoffset, int32 width, int32 height, GLenum format, GLenum type_, void *pixels)
+//let glUniform1f             = emu_glUniform1f
+//let glUniform1fv            = emu_glUniform1fv           (int32 location, int32 count, [<MarshalAs(UnmanagedType.LPArray)>] single[] value)
+//let glUniform1i             = emu_glUniform1i
+//let glUniform1iv            = emu_glUniform1iv           (int32 location, int32 count, [<MarshalAs(UnmanagedType.LPArray)>] int32[] value)
+//let glUniform2f             = emu_glUniform2f
+//let glUniform2fv            = emu_glUniform2fv           (int32 location, int32 count, [<MarshalAs(UnmanagedType.LPArray)>] single[] value)
+//let glUniform2i             = emu_glUniform2i
+//let glUniform2iv            = emu_glUniform2iv           (int32 location, int32 count, [<MarshalAs(UnmanagedType.LPArray)>] int32[] value)
+//let glUniform3f             = emu_glUniform3f
+//let glUniform3fv            = emu_glUniform3fv           (int32 location, int32 count, [<MarshalAs(UnmanagedType.LPArray)>] single[] value)
+//let glUniform3i             = emu_glUniform3i
+//let glUniform3iv            = emu_glUniform3iv           (int32 location, int32 count, [<MarshalAs(UnmanagedType.LPArray)>] int32[] value)
+//let glUniform4f             = emu_glUniform4f
+//let glUniform4fv            = emu_glUniform4fv           (int32 location, int32 count, [<MarshalAs(UnmanagedType.LPArray)>] single[] value)
+//let glUniform4i             = emu_glUniform4i
+//let glUniform4iv            = emu_glUniform4iv           (int32 location, int32 count, [<MarshalAs(UnmanagedType.LPArray)>] int32[] value)
+//let glUniformMatrix2fv      = emu_glUniformMatrix2fv     (int32 location, int32 count, GLboolean transpose, [<MarshalAs(UnmanagedType.LPArray)>] single[] value)
+//let glUniformMatrix3fv      = emu_glUniformMatrix3fv     (int32 location, int32 count, GLboolean transpose, [<MarshalAs(UnmanagedType.LPArray)>] single[] value)
+//let glUniformMatrix4fv      = emu_glUniformMatrix4fv     (int32 location, int32 count, GLboolean transpose, [<MarshalAs(UnmanagedType.LPArray)>] single[] value)
+//let glUseProgram            = emu_glUseProgram
+//let glValidateProgram       = emu_glValidateProgram
+//let glVertexAttrib1f        = emu_glVertexAttrib1f
+//let glVertexAttrib1fv       = emu_glVertexAttrib1fv      (int32 index, single *v)
+//let glVertexAttrib2f        = emu_glVertexAttrib2f
+//let glVertexAttrib2fv       = emu_glVertexAttrib2fv      (int32 index, single *v)
+//let glVertexAttrib3f        = emu_glVertexAttrib3f
+//let glVertexAttrib3fv       = emu_glVertexAttrib3fv      (int32 index, single *v)
+//let glVertexAttrib4f        = emu_glVertexAttrib4f
+//let glVertexAttrib4fv       = emu_glVertexAttrib4fv      (int32 index, single *v)
+//let glVertexAttribPointer   = emu_glVertexAttribPointer  (int32 index, int32 size, GLenum type_, GLboolean normalized, int32 stride, void *pointer)
 let glViewport              = emu_glViewport

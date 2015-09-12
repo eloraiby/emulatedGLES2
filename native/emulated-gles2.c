@@ -185,10 +185,10 @@ DLL_PUBLIC void      emu_glGenTextures(uint32 n, uint32 *textures) {
 	glGenTextures(n, textures);
 }
 DLL_PUBLIC void      emu_glGetActiveAttrib(uint32 program, uint32 index, uint32 bufSize, sint32 *length, sint32 *size, GL_ENUM *type, char *name) {
-	glGetActiveAttrib(program, index, bufSize, length, size, type, name);
+	glGetActiveAttrib(program, index, bufSize, length, size, (GLenum*)type, name);
 }
 DLL_PUBLIC void      emu_glGetActiveUniform(uint32 program, uint32 index, uint32 bufSize, sint32 *length, sint32 *size, GL_ENUM *type, char *name) {
-	glGetActiveUniform(program, index, bufSize, length, size, type, name);
+	glGetActiveUniform(program, index, bufSize, length, size, (GLenum*)type, name);
 }
 DLL_PUBLIC void      emu_glGetAttachedShaders(uint32 program, uint32 maxCount, sint32 *count, uint32 *shaders) {
 	glGetAttachedShaders(program, maxCount, count, shaders);
