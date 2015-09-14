@@ -328,7 +328,7 @@ type GLenum =
 [<AutoOpen>]
 module private Native = 
     [<Literal>]
-    let DllName = @"emulatedGLES2"
+    let DllName = @"emuGLES2"
     
     [<Literal>]
     let MaxStrLength = 256
@@ -645,8 +645,7 @@ module private Native =
     extern unit emu_glShaderBinary(int32 count, int32 * shaders, GLenum binaryformat, void * binary, int32 length)
     
     [<DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)>]
-    //        extern void      emu_glShaderSource         (int32 shader, int32 count, char **str, int32 *length);                                                                      
-    extern unit emu_glShaderSource(int32 shader, int32 count, IntPtr str, int32 * length)
+    extern unit emu_glShaderSource(int32 shader, int32 count, string[] str, [<MarshalAs(UnmanagedType.LPArray)>] int32[] length)
     
     [<DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)>]
     extern unit emu_glStencilFunc(GLenum func, int32 ref_, int32 mask)
@@ -963,8 +962,10 @@ let glRenderbufferStorage   = emu_glRenderbufferStorage
 //let glSampleCoverage        = emu_glSampleCoverage       (single value, GLboolean invert)
 let glScissor               = emu_glScissor
 //let glShaderBinary          = emu_glShaderBinary         (int32 count, int32 *shaders, GLenum binaryformat, void *binary, int32 length)
-////let emu_glShaderSource        = t emu_glShaderSource         (int32 shader, int32 count, char **str, int32 *length);                                                                      
-//let glShaderSource          = emu_glShaderSource         (int32 shader, int32 count, IntPtr str, int32 *length)
+let glShaderSource (shader: int, sources: string[]) =
+    let lengths = sources |> Array.map String.length
+    emu_glShaderSource (shader, sources.Length, sources, lengths)
+
 let glStencilFunc           = emu_glStencilFunc
 let glStencilFuncSeparate   = emu_glStencilFuncSeparate
 let glStencilMask           = emu_glStencilMask

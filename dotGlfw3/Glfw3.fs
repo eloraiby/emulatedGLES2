@@ -308,7 +308,7 @@ type GammaRamp =
 
 [<AutoOpen>]
 module private Native =
-    let [<LiteralAttribute>] GLFW_DLL = @"glfw"
+    let [<LiteralAttribute>] GLFW_DLL = @"glfw3"
 
     type InputMode =
         | CURSOR                 = 0x00033001
@@ -395,7 +395,7 @@ module private Native =
     extern IntPtr glfwGetGammaRamp(GLFWmonitor monitor)
 
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
-    extern void glfwSetGammaRamp(GLFWmonitor monitor, [<MarshalAs(UnmanagedType.LPStruct)>] GLFWgammaramp ramp);
+    extern void glfwSetGammaRamp(GLFWmonitor monitor, [<Out;In>] GLFWgammaramp& ramp);
 
     [<DllImportAttribute(GLFW_DLL, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)>]
     extern void glfwDefaultWindowHints()
@@ -650,6 +650,7 @@ let getGammaramp (m: Monitor) =
               blueArr  |> Array.map s2i)
 
 let setGammaramp (m: Monitor, gr: GammaRamp) =
+    printfn "Gamma Ramp"
     let red   = gr.Red   |> Array.map uint16
     let blue  = gr.Blue  |> Array.map uint16
     let green = gr.Green |> Array.map uint16
@@ -657,9 +658,9 @@ let setGammaramp (m: Monitor, gr: GammaRamp) =
     let gh = GCHandle.Alloc (green, GCHandleType.Pinned)
     let bh = GCHandle.Alloc (blue , GCHandleType.Pinned)
 
-    let ramp = GLFWgammaramp(rh.AddrOfPinnedObject(), gh.AddrOfPinnedObject(), bh.AddrOfPinnedObject(), red.Length |> uint16)
+    let mutable ramp = GLFWgammaramp(rh.AddrOfPinnedObject(), gh.AddrOfPinnedObject(), bh.AddrOfPinnedObject(), red.Length |> uint16)
 
-    glfwSetGammaRamp(m.Value, ramp)
+    glfwSetGammaRamp(m.Value, &ramp)
 
     bh.Free()
     gh.Free()

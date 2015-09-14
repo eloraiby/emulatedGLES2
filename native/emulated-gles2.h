@@ -498,4 +498,6 @@ DLL_PUBLIC void      emu_glVertexAttrib4f		(uint32 index, float x, float y, floa
 DLL_PUBLIC void      emu_glVertexAttrib4fv		(uint32 index, const float *v);
 DLL_PUBLIC void      emu_glVertexAttribPointer		(uint32 index, sint32 size, GL_ENUM type, GLboolean normalized, uint32 stride, const void *pointer);
 DLL_PUBLIC void      emu_glViewport			(sint32 x, sint32 y, uint32 width, uint32 height);
+
+DLL_PUBLIC int		 emu_initForCurrentViewport();
 #endif // EMULATEDGLES2_H
