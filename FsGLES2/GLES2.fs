@@ -672,13 +672,13 @@ module private Native =
     extern unit emu_glTexParameterf(GLenum target, GLenum pname, single param)
     
     [<DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)>]
-    extern unit emu_glTexParameterfv(GLenum target, GLenum pname, single * parms)
+    extern unit emu_glTexParameterfv(GLenum target, GLenum pname, [<MarshalAs(UnmanagedType.LPArray)>] single[] parms)
     
     [<DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)>]
     extern unit emu_glTexParameteri(GLenum target, GLenum pname, int32 param)
     
     [<DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)>]
-    extern unit emu_glTexParameteriv(GLenum target, GLenum pname, int32 * parms)
+    extern unit emu_glTexParameteriv(GLenum target, GLenum pname, [<MarshalAs(UnmanagedType.LPArray)>] int32[] parms)
     
     [<DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)>]
     extern unit emu_glTexSubImage2D(GLenum target, int32 level, int32 xoffset, int32 yoffset, int32 width, int32 height, GLenum format, GLenum type_, void * pixels)
@@ -771,7 +771,7 @@ module private Native =
     extern unit emu_glVertexAttrib4fv(int32 index, single * v)
     
     [<DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)>]
-    extern unit emu_glVertexAttribPointer(int32 index, int32 size, GLenum type_, GLboolean normalized, int32 stride, void * pointer)
+    extern unit emu_glVertexAttribPointer(int32 index, int32 size, GLenum type_, GLboolean normalized, int32 stride, IntPtr pointer)
     
     [<DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)>]
     extern unit emu_glViewport(int32 x, int32 y, int32 width, int32 height)
@@ -920,7 +920,7 @@ let glGetAttachedShaders program   =
     shaders.[0 .. count - 1]
 
 let glGetAttribLocation     = emu_glGetAttribLocation    
-
+12q
 //let glGetBooleanv           = emu_glGetBooleanv          (GLenum pname, GLboolean *data)
 //let glGetBufferParameteriv  = emu_glGetBufferParameteriv (GLenum target, GLenum pname, int32 *parms)
 let glGetError              = emu_glGetError             
@@ -956,12 +956,21 @@ let glLineWidth             = emu_glLineWidth
 let glLinkProgram           = emu_glLinkProgram
 let glPixelStorei           = emu_glPixelStorei
 let glPolygonOffset         = emu_glPolygonOffset
-//let glReadPixels            = emu_glReadPixels           (int32 x, int32 y, int32 width, int32 height, GLenum format, GLenum type_, void *pixels)
+
+let glReadPixels<'T when 'T: struct> (x, y, width, height, format, type_, pixels: 'T[]) =
+    let gch = GCHandle.Alloc (pixels, GCHandleType.Pinned)
+    emu_glReadPixels (x, y, width, height, format, type_, gch.AddrOfPinnedObject ())
+    gch.Free ()
+
 let glReleaseShaderCompiler = emu_glReleaseShaderCompiler
 let glRenderbufferStorage   = emu_glRenderbufferStorage
+
 //let glSampleCoverage        = emu_glSampleCoverage       (single value, GLboolean invert)
+
 let glScissor               = emu_glScissor
+
 //let glShaderBinary          = emu_glShaderBinary         (int32 count, int32 *shaders, GLenum binaryformat, void *binary, int32 length)
+
 let glShaderSource (shader: int, sources: string[]) =
     let lengths = sources |> Array.map String.length
     emu_glShaderSource (shader, sources.Length, sources, lengths)
@@ -972,34 +981,45 @@ let glStencilMask           = emu_glStencilMask
 let glStencilMaskSeparate   = emu_glStencilMaskSeparate
 let glStencilOp             = emu_glStencilOp
 let glStencilOpSeparate     = emu_glStencilOpSeparate
-//let glTexImage2D            = emu_glTexImage2D           (GLenum target, int32 level, int32 internalformat, int32 width, int32 height, int32 border, GLenum format, GLenum type_, void *pixels)
+
+let glTexImage2D<'T when 'T: struct> (target, level, internalformat, width, height, border, format, type_, pixels: 'T[]) =
+    let gch = GCHandle.Alloc(pixels, GCHandleType.Pinned)
+    emu_glTexImage2D (target, level, internalformat, width, height, border, format, type_, gch.AddrOfPinnedObject ())
+    gch.Free ()
+
 let glTexParameterf         = emu_glTexParameterf
-//let glTexParameterfv        = emu_glTexParameterfv       (GLenum target, GLenum pname, single *parms)
+let glTexParameterfv        = emu_glTexParameterfv
 let glTexParameteri         = emu_glTexParameteri
-//let glTexParameteriv        = emu_glTexParameteriv       (GLenum target, GLenum pname, int32 *parms)
-//let glTexSubImage2D         = emu_glTexSubImage2D        (GLenum target, int32 level, int32 xoffset, int32 yoffset, int32 width, int32 height, GLenum format, GLenum type_, void *pixels)
+let glTexParameteriv        = emu_glTexParameteriv
+
+let glTexSubImage2D<'T when 'T: struct> (target, level, xoffset, yoffset, width, height, format, type_, pixels: 'T[]) =
+    let gch = GCHandle.Alloc (pixels, GCHandleType.Pinned)
+    emu_glTexSubImage2D (target, level, xoffset, yoffset, width, height, format, type_, gch.AddrOfPinnedObject ())
+    gch.Free ()
+
 let glUniform1f             = emu_glUniform1f
-//let glUniform1fv            = emu_glUniform1fv           (int32 location, int32 count, [<MarshalAs(UnmanagedType.LPArray)>] single[] value)
+let glUniform1fv            = emu_glUniform1fv
 let glUniform1i             = emu_glUniform1i
-//let glUniform1iv            = emu_glUniform1iv           (int32 location, int32 count, [<MarshalAs(UnmanagedType.LPArray)>] int32[] value)
+let glUniform1iv            = emu_glUniform1iv           
 let glUniform2f             = emu_glUniform2f
-//let glUniform2fv            = emu_glUniform2fv           (int32 location, int32 count, [<MarshalAs(UnmanagedType.LPArray)>] single[] value)
+let glUniform2fv            = emu_glUniform2fv           
 let glUniform2i             = emu_glUniform2i
-//let glUniform2iv            = emu_glUniform2iv           (int32 location, int32 count, [<MarshalAs(UnmanagedType.LPArray)>] int32[] value)
+let glUniform2iv            = emu_glUniform2iv           
 let glUniform3f             = emu_glUniform3f
-//let glUniform3fv            = emu_glUniform3fv           (int32 location, int32 count, [<MarshalAs(UnmanagedType.LPArray)>] single[] value)
+let glUniform3fv            = emu_glUniform3fv           
 let glUniform3i             = emu_glUniform3i
-//let glUniform3iv            = emu_glUniform3iv           (int32 location, int32 count, [<MarshalAs(UnmanagedType.LPArray)>] int32[] value)
+let glUniform3iv            = emu_glUniform3iv           
 let glUniform4f             = emu_glUniform4f
-//let glUniform4fv            = emu_glUniform4fv           (int32 location, int32 count, [<MarshalAs(UnmanagedType.LPArray)>] single[] value)
+let glUniform4fv            = emu_glUniform4fv           
 let glUniform4i             = emu_glUniform4i
-//let glUniform4iv            = emu_glUniform4iv           (int32 location, int32 count, [<MarshalAs(UnmanagedType.LPArray)>] int32[] value)
+let glUniform4iv            = emu_glUniform4iv           
 let glUniformMatrix2fv      = emu_glUniformMatrix2fv
 let glUniformMatrix3fv      = emu_glUniformMatrix3fv
 let glUniformMatrix4fv      = emu_glUniformMatrix4fv
 let glUseProgram            = emu_glUseProgram
 let glValidateProgram       = emu_glValidateProgram
 let glVertexAttrib1f        = emu_glVertexAttrib1f
+
 //let glVertexAttrib1fv       = emu_glVertexAttrib1fv      (int32 index, single *v)
 //let glVertexAttrib2f        = emu_glVertexAttrib2f
 //let glVertexAttrib2fv       = emu_glVertexAttrib2fv      (int32 index, single *v)
@@ -1007,5 +1027,7 @@ let glVertexAttrib1f        = emu_glVertexAttrib1f
 //let glVertexAttrib3fv       = emu_glVertexAttrib3fv      (int32 index, single *v)
 //let glVertexAttrib4f        = emu_glVertexAttrib4f
 //let glVertexAttrib4fv       = emu_glVertexAttrib4fv      (int32 index, single *v)
-//let glVertexAttribPointer   = emu_glVertexAttribPointer  (int32 index, int32 size, GLenum type_, GLboolean normalized, int32 stride, void *pointer)
+
+/// only allow buffers to be used with glVertexAttribPointer
+let glVertexAttribPointer (index, size, type_, normalized, stride, pointer : int) = emu_glVertexAttribPointer  (index, size, type_, normalized, stride, IntPtr.Add(nativeint(0), pointer))
 let glViewport              = emu_glViewport
